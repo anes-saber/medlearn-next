@@ -1,0 +1,244 @@
+# MedLearn — Full Platform Implementation Plan
+
+## What Already Exists (Audit)
+
+Your project already has a **solid foundation**. Here's what's built:
+
+| Area | Status | Details |
+|------|--------|---------|
+| **Auth** | ✅ Done | Login, signup, AuthContext, role fetching |
+| **RBAC** | ✅ Done | `admin`/`teacher`/`student` roles, RLS policies in Supabase |
+| **Public Landing** | ✅ Done | Beautiful hero, stats, featured majors |
+| **Public Browse** | ✅ Done | `/majors` → `/majors/[id]` → `/majors/[id]/modules/[id]` with tabs for resources, quizzes, homework |
+| **Admin Dashboard** | ✅ Done | Stats cards, quick links |
+| **Admin Catalog** | ✅ Done | MajorManager, ModuleManager |
+| **Admin Resources** | ✅ Done | ResourceManager (file, link, YouTube, notes) |
+| **Admin Questions** | ✅ Done | QuestionBankView (SCQ, MCQ, True/False) |
+| **Admin Quizzes** | ✅ Done | QuizBuilderView (practice/exam modes, rules) |
+| **Admin Homework** | ✅ Done | HomeworkManagerView (create, deadline, attachments) |
+| **Quiz Taking** | ✅ Done | Full quiz attempt flow with grading + results |
+| **Homework Submission** | ✅ Done | Public submit form (name/email based) |
+| **i18n** | ✅ Done | EN/FR/AR with LanguageContext |
+| **Database Schema** | ✅ Done | All tables, RLS policies, migrations |
+
+## What's Missing (Gap Analysis)
+
+Based on your spec, the following are NOT yet built:
+
+| Feature | Priority | Description |
+|---------|----------|-------------|
+| **Student Dashboard** `/dashboard` | 🔴 High | Overview with recent resources, pending quizzes, homework due, scores |
+| **Teacher Dashboard** `/teacher/dashboard` | 🔴 High | Overview with pending grading, recent activity, course stats |
+| **Role-Based Redirect** after login | 🔴 High | Teachers → `/teacher/dashboard`, Students → `/dashboard` |
+| **Student Courses** `/courses` | 🟡 Medium | Enrolled/published courses list (currently only `/majors`) |
+| **Student Quiz History** `/quizzes` + `/quizzes/[id]/result` | 🟡 Medium | List of available quizzes + past attempt results |
+| **Student Homework** `/homework` + `/homework/[id]` | 🟡 Medium | View assignments + submit (currently only inline in module tabs) |
+| **Teacher Courses** `/teacher/courses` | 🟡 Medium | Dedicated teacher view to manage courses (currently `/admin/catalog`) |
+| **Teacher Submissions** `/teacher/submissions/[id]` | 🔴 High | Grade student submissions with feedback |
+| **Middleware** | 🔴 High | Route protection for `/dashboard`, `/teacher/*` |
+| **Quiz Attempts Table** | 🔴 High | DB table to persist quiz results for history/tracking |
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Naming Clarification**: Your spec uses "courses" and "sections", but your existing DB/code uses "majors" and "modules". I will **keep your existing `majors`/`modules` structure** and just create the new routes/pages as wrappers. The student will see them as "Courses" in the UI via translations, but the DB stays the same. Let me know if you want actual `courses` / `sections` tables instead.
+
+> [!IMPORTANT]
+> **Registration Role Selection**: Your spec mentions role selection (Teacher/Student) on register. Currently, signup auto-assigns `student` via the DB trigger. Should I add a role selector on the signup form, or do you want teachers to be manually promoted by an admin?
+
+> [!WARNING]
+> **Supabase Storage**: Your spec mentions file upload for homework submissions. Currently, homework submissions use text/link fields only. Adding actual file upload requires a Supabase Storage bucket (`homework-submissions`). I'll add the code, but **you'll need to create the bucket in your Supabase dashboard** (Settings → Storage → New Bucket → name it `homework-submissions`, set it to public or with appropriate policies).
+
+## Open Questions
+
+> [!IMPORTANT]
+> 1. **Do students need to enroll in courses?** Or can they see all published courses automatically? (Your current setup shows all published content to everyone — I'll keep this unless you say otherwise)
+> 2. **Do you want a separate `/teacher/*` route group** distinct from the current `/admin/*`? Or should I rename `/admin` to `/teacher` since your roles are teacher-centric?
+> 3. **Notifications**: Your spec mentions Supabase Realtime as optional. Should I skip this for now and add it later?
+
+---
+
+## Proposed Changes
+
+### Phase 1 — Database & Infrastructure
+
+#### [NEW] `supabase/migrations/20260605000000_quiz_attempts.sql`
+New table to track quiz attempts so students can see their history and teachers can see class performance:
+```sql
+quiz_attempts (
+  id UUID PK,
+  quiz_id UUID FK → quizzes,
+  user_id UUID FK → auth.users (nullable for anonymous),
+  answers_json JSONB,
+  score INTEGER,
+  total INTEGER,
+  completed_at TIMESTAMPTZ
+)
+```
+With RLS: students see own attempts, teachers see all.
+
+#### [MODIFY] [middleware.ts](file:///c:/Users/MACANS/Desktop/Codes/medlearn-next/src/middleware.ts)
+Create Next.js middleware at the `src/` level to protect:
+- `/dashboard` → requires auth + `student` role
+- `/teacher/*` → requires auth + `teacher`/`admin` role
+- `/admin/*` → requires auth + `admin`/`teacher` role (already handled by layout, but middleware adds edge protection)
+
+---
+
+### Phase 2 — Role-Based Routing
+
+#### [MODIFY] [login/page.tsx](file:///c:/Users/MACANS/Desktop/Codes/medlearn-next/src/app/login/page.tsx)
+After login, redirect based on role:
+- `teacher`/`admin` → `/teacher/dashboard`
+- `student` → `/dashboard`
+- Instead of always going to `/admin`
+
+#### [MODIFY] [LoginForm.tsx](file:///c:/Users/MACANS/Desktop/Codes/medlearn-next/src/features/auth/components/LoginForm.tsx)
+Update post-login redirect logic to check role and navigate accordingly.
+
+---
+
+### Phase 3 — Student Portal
+
+#### [NEW] `src/app/dashboard/layout.tsx`
+Student-only layout with auth check. Redirects non-students.
+
+#### [NEW] `src/app/dashboard/page.tsx`
+Student dashboard with cards:
+- **Continue Learning** — last accessed course/module
+- **Upcoming Quizzes** — quizzes from published modules
+- **Pending Homework** — assignments due
+- **Recent Scores** — latest quiz attempt results
+
+#### [NEW] `src/features/student/components/StudentDashboard.tsx`
+Client component that fetches and displays the 4 dashboard card sections.
+
+#### [NEW] `src/features/student/components/StudentShell.tsx`
+Sidebar/nav shell for student pages (similar to AdminShell).
+
+---
+
+#### [NEW] `src/app/dashboard/courses/page.tsx`
+Lists all published majors (courses) — a student-friendly view of `/majors`.
+
+#### [NEW] `src/app/dashboard/courses/[id]/page.tsx`
+Course detail with sections (modules) in accordion style, showing resources.
+
+---
+
+#### [NEW] `src/app/dashboard/quizzes/page.tsx`
+Lists all published quizzes the student can take, grouped by course/module.
+
+#### [NEW] `src/app/dashboard/quizzes/[id]/take/page.tsx`
+Quiz taking interface (reuses existing `QuizAttemptView`).
+
+#### [NEW] `src/app/dashboard/quizzes/[id]/result/page.tsx`
+Shows the result of a specific quiz attempt.
+
+---
+
+#### [NEW] `src/app/dashboard/homework/page.tsx`
+Lists all published homework assignments.
+
+#### [NEW] `src/app/dashboard/homework/[id]/page.tsx`
+View + submit a specific homework assignment (with file upload).
+
+---
+
+### Phase 4 — Teacher Portal
+
+#### [NEW] `src/app/teacher/layout.tsx`
+Teacher-only layout with auth + role check. 
+
+#### [NEW] `src/app/teacher/dashboard/page.tsx`
+Teacher dashboard with cards:
+- **Courses Created** — count + link
+- **Pending Submissions** — ungraded homework count
+- **Recent Quiz Results** — class average of recent quizzes
+- **Latest Resources** — recently uploaded
+
+#### [NEW] `src/features/teacher/components/TeacherDashboard.tsx`
+Client component for teacher dashboard.
+
+#### [NEW] `src/features/teacher/components/TeacherShell.tsx`
+Sidebar nav for teacher pages (links to courses, questions, quizzes, homework, submissions).
+
+---
+
+#### [NEW] `src/app/teacher/courses/page.tsx`
+Teacher's course management (reuses/wraps existing AdminHomeView catalog).
+
+#### [NEW] `src/app/teacher/courses/[id]/page.tsx`
+Edit course resources (wraps existing ResourceManager).
+
+#### [NEW] `src/app/teacher/questions/page.tsx`
+Question bank (wraps existing QuestionBankView).
+
+#### [NEW] `src/app/teacher/quizzes/page.tsx`
+Quiz builder (wraps existing QuizBuilderView).
+
+#### [NEW] `src/app/teacher/homework/page.tsx`
+Homework manager (wraps existing HomeworkManagerView).
+
+#### [NEW] `src/app/teacher/submissions/page.tsx`
+List of all homework submissions, filterable by course/module/homework.
+
+#### [NEW] `src/app/teacher/submissions/[id]/page.tsx`
+Grade a specific submission: view student's work, add grade + feedback.
+
+#### [NEW] `src/features/teacher/components/SubmissionGrader.tsx`
+Client component for viewing a submission and inputting grade/feedback.
+
+---
+
+### Phase 5 — Services & Utilities
+
+#### [NEW] `src/features/student/services/dashboard.ts`
+Server-side data fetching for student dashboard (recent quizzes, homework, scores).
+
+#### [NEW] `src/features/teacher/services/dashboard.ts`
+Server-side data fetching for teacher dashboard (pending submissions, stats).
+
+#### [NEW] `src/features/quiz/actions/saveQuizAttempt.ts`
+Server action to save a quiz attempt to the new `quiz_attempts` table after grading.
+
+#### [MODIFY] [gradeQuizAttempt.ts](file:///c:/Users/MACANS/Desktop/Codes/medlearn-next/src/features/quiz/actions/gradeQuizAttempt.ts)
+After grading, save the attempt if user is logged in.
+
+---
+
+### Phase 6 — UI Navigation Updates
+
+#### [MODIFY] [Header.tsx](file:///c:/Users/MACANS/Desktop/Codes/medlearn-next/src/components/layout/Header.tsx)
+Add navigation links based on role:
+- Students see: Home, Courses, Dashboard
+- Teachers see: Home, Teacher Panel
+- Public: Home, Majors, Login/Signup
+
+#### [MODIFY] [LanguageContext.tsx](file:///c:/Users/MACANS/Desktop/Codes/medlearn-next/src/contexts/LanguageContext.tsx)
+Add translation keys for all new pages (student dashboard, teacher dashboard, submissions, etc.).
+
+---
+
+## Verification Plan
+
+### Automated Tests
+```bash
+npm run build
+```
+Ensure zero TypeScript errors and successful production build.
+
+### Manual Verification
+1. **Login as student** → verify redirect to `/dashboard` → see courses, quizzes, homework
+2. **Login as teacher** → verify redirect to `/teacher/dashboard` → manage content, grade submissions
+3. **Take a quiz as student** → verify result saved and visible in quiz history
+4. **Submit homework as student** → verify teacher sees it in submissions
+5. **Grade homework as teacher** → verify student gets feedback
+6. Browse the site without login → verify public pages still work
+
+### Browser Testing
+- Test role-based redirects
+- Test responsive design on mobile
+- Test all CRUD operations via the browser tool
