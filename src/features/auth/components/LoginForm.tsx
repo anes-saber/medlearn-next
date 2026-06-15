@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { setRoleCookie } from "@/features/auth/actions/authCookies";
 
 export default function LoginForm() {
   const { t } = useLanguage();
@@ -43,6 +44,10 @@ export default function LoginForm() {
         .select("role")
         .eq("id", user.id)
         .single();
+
+      if (profile?.role) {
+        await setRoleCookie(profile.role);
+      }
 
       if (profile && (profile.role === "admin" || profile.role === "teacher")) {
         router.push("/teacher/dashboard");

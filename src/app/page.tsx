@@ -1,3 +1,4 @@
+export const runtime = "edge";
 export const revalidate = 60;
 
 import HomeView from "@/features/majors/components/HomeView";

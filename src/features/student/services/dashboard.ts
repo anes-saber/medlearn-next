@@ -5,7 +5,7 @@ export async function getStudentDashboardData(supabase: SupabaseClient<Database>
   // Fetch latest quiz attempts
   const { data: recentAttempts } = await supabase
     .from("quiz_attempts")
-    .select("*, quizzes(title, module_id)")
+    .select("id, score, total, completed_at, quiz_id, quizzes(title)")
     .eq("user_id", userId)
     .order("completed_at", { ascending: false })
     .limit(5);
@@ -16,7 +16,7 @@ export async function getStudentDashboardData(supabase: SupabaseClient<Database>
   // Actually, let's just fetch all homework for now, ordered by deadline.
   const { data: allHomework } = await supabase
     .from("homeworks")
-    .select("*")
+    .select("id, title_en, title_fr, title_ar, due_at, module_id")
     .order("created_at", { ascending: false })
     .limit(5);
 

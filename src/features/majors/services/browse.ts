@@ -1,5 +1,8 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+import { getSupabaseEnv } from "@/lib/supabase/env";
 import type { Database } from "@/types/database";
+import { unstable_cache } from "next/cache";
 
 export type MajorRow = Database["public"]["Tables"]["majors"]["Row"];
 export type ModuleRow = Database["public"]["Tables"]["modules"]["Row"];
@@ -40,16 +43,21 @@ export async function getHomeStats(): Promise<{
   };
 }
 
-export async function getModuleCountsByMajor(): Promise<Record<string, number>> {
-  const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase.from("modules").select("major_id");
-  if (error || !data) return {};
-  const counts: Record<string, number> = {};
-  for (const row of data) {
-    counts[row.major_id] = (counts[row.major_id] ?? 0) + 1;
-  }
-  return counts;
-}
+export const getModuleCountsByMajor = unstable_cache(
+  async (): Promise<Record<string, number>> => {
+    const { url, anonKey } = getSupabaseEnv();
+    const supabase = createClient<Database>(url, anonKey);
+    const { data, error } = await supabase.from("modules").select("major_id");
+    if (error || !data) return {};
+    const counts: Record<string, number> = {};
+    for (const row of data) {
+      counts[row.major_id] = (counts[row.major_id] ?? 0) + 1;
+    }
+    return counts;
+  },
+  ["module-counts-by-major"],
+  { revalidate: 3600 }
+);
 
 export async function getMajorById(id: string): Promise<MajorRow | null> {
   const supabase = await createServerSupabaseClient();
@@ -76,23 +84,26 @@ export async function getModulesForMajor(majorId: string): Promise<ModuleRow[]> 
   return data ?? [];
 }
 
-export async function getResourceCountsByModuleForMajor(
-  majorId: string,
-): Promise<Record<string, number>> {
-  const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("resources")
-    .select("module_id")
-    .eq("major_id", majorId)
-    .eq("published", true);
+export const getResourceCountsByModuleForMajor = unstable_cache(
+  async (majorId: string): Promise<Record<string, number>> => {
+    const { url, anonKey } = getSupabaseEnv();
+    const supabase = createClient<Database>(url, anonKey);
+    const { data, error } = await supabase
+      .from("resources")
+      .select("module_id")
+      .eq("major_id", majorId)
+      .eq("published", true);
 
-  if (error || !data) return {};
-  const counts: Record<string, number> = {};
-  for (const row of data) {
-    counts[row.module_id] = (counts[row.module_id] ?? 0) + 1;
-  }
-  return counts;
-}
+    if (error || !data) return {};
+    const counts: Record<string, number> = {};
+    for (const row of data) {
+      counts[row.module_id] = (counts[row.module_id] ?? 0) + 1;
+    }
+    return counts;
+  },
+  ["resource-counts-by-module-for-major"],
+  { revalidate: 3600 }
+);
 
 export async function getModuleById(id: string): Promise<ModuleRow | null> {
   const supabase = await createServerSupabaseClient();

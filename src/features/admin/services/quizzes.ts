@@ -95,7 +95,6 @@ export async function updateQuiz(id: string, payload: QuizPayload) {
 
 async function syncQuizQuestions(quizId: string, questionIds: string[]) {
   const supabase = getBrowserSupabaseClient();
-  // Delete existing and re-insert in order
   const { error: delError } = await supabase.from("quiz_questions").delete().eq("quiz_id", quizId);
   if (delError) throw new Error(formatSupabaseError(delError));
   if (questionIds.length > 0) {

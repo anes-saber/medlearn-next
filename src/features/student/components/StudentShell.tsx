@@ -74,25 +74,32 @@ export default function StudentShell({ children }: { children: React.ReactNode }
       </aside>
 
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t"
-        style={{ background: "hsl(220,14%,9%)", borderColor: "hsl(220,12%,16%)" }}
+        className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t overflow-x-auto"
+        style={{
+          background: "hsl(220,14%,9%)",
+          borderColor: "hsl(220,12%,16%)",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
       >
-        {navItems.map((item) => {
-          const active = item.exact
-            ? pathname === item.href
-            : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[9px] font-medium transition-colors"
-              style={{ color: active ? "hsl(210,100%,65%)" : "hsl(215,15%,45%)" }}
-            >
-              <item.icon className="h-5 w-5" aria-hidden />
-              <span className="leading-none">{t(item.label).slice(0, 7)}</span>
-            </Link>
-          );
-        })}
+        <div className="flex w-full min-w-max justify-around items-center px-2">
+          {navItems.map((item) => {
+            const active = item.exact
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex flex-col items-center gap-1 py-2 px-3 text-[10px] font-medium transition-colors min-w-[72px] flex-none"
+                style={{ color: active ? "hsl(210,100%,65%)" : "hsl(215,15%,45%)" }}
+              >
+                <item.icon className="h-5 w-5 shrink-0" aria-hidden />
+                <span className="leading-none text-center whitespace-nowrap">{t(item.label)}</span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       <main className="flex-1 overflow-auto pb-20 md:pb-0 animate-fade-in">

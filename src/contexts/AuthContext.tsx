@@ -13,6 +13,7 @@ import type { Session, SupabaseClient, User } from "@supabase/supabase-js";
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
 import type { UserRole } from "@/lib/rbac";
 import type { Database } from "@/types/database";
+import { clearRoleCookie } from "@/features/auth/actions/authCookies";
 
 interface AuthContextType {
   user: User | null;
@@ -115,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return;
     await supabase.auth.signOut();
     setRole(null);
+    await clearRoleCookie();
   }, [supabase]);
 
   return (

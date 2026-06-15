@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookOpen, ClipboardList, FileQuestion, GraduationCap, PenLine, TrendingUp, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 interface Stats {
   majors: number;
@@ -63,30 +61,9 @@ const cards = [
   },
 ];
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ initialStats }: { initialStats: Stats }) {
   const { t } = useLanguage();
-  const [stats, setStats] = useState<Stats | null>(null);
-
-  useEffect(() => {
-    const supabase = getBrowserSupabaseClient();
-    Promise.all([
-      supabase.from("majors").select("id", { count: "exact", head: true }),
-      supabase.from("modules").select("id", { count: "exact", head: true }),
-      supabase.from("resources").select("id", { count: "exact", head: true }),
-      supabase.from("questions").select("id", { count: "exact", head: true }),
-      supabase.from("quizzes").select("id", { count: "exact", head: true }),
-      supabase.from("homeworks").select("id", { count: "exact", head: true }),
-    ]).then(([maj, mod, res, q, qz, hw]) => {
-      setStats({
-        majors:    maj.count ?? 0,
-        modules:   mod.count ?? 0,
-        resources: res.count ?? 0,
-        questions: q.count ?? 0,
-        quizzes:   qz.count ?? 0,
-        homeworks: hw.count ?? 0,
-      });
-    });
-  }, []);
+  const stats = initialStats;
 
   return (
     <div className="px-6 py-8 space-y-8 animate-fade-in">

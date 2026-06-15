@@ -1,6 +1,6 @@
 import type { ModuleRow, ResourcePayload } from "@/features/admin/services/admin";
 
-export function isValidHttpUrl(raw: string): boolean {
+function isValidHttpUrl(raw: string): boolean {
   try {
     const u = new URL(raw.trim());
     return u.protocol === "http:" || u.protocol === "https:";
@@ -10,7 +10,7 @@ export function isValidHttpUrl(raw: string): boolean {
 }
 
 /** YouTube video IDs are typically 11 chars; allow a practical range. */
-export function isValidYoutubeId(raw: string): boolean {
+function isValidYoutubeId(raw: string): boolean {
   const v = raw.trim();
   return /^[a-zA-Z0-9_-]{6,32}$/.test(v);
 }

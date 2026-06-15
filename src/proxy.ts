@@ -5,11 +5,19 @@ import type { Database } from "@/types/database";
 
 import { isAdminOrTeacher, type UserRole } from "@/lib/rbac";
 import { getSupabaseEnv } from "@/lib/supabase/env";
+import { rateLimit, rateLimitHeaders } from "@/lib/rateLimit";
 
 export default async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+  if (request.method === "POST") {
+    const rl = await rateLimit(`proxy:${request.nextUrl.pathname}:${request.headers.get("x-forwarded-for") ?? "unknown"}`, 30, 60);
+    if (!rl.success) {
+      const response = NextResponse.json({ error: "Too Many Requests" }, { status: 429 });
+      Object.entries(rateLimitHeaders(rl)).forEach(([k, v]) => response.headers.set(k, v));
+      return response;
+    }
+  }
+
+  let supabaseResponse = NextResponse.next({ request });
 
   const { url, anonKey } = getSupabaseEnv();
 
@@ -36,6 +44,16 @@ export default async function proxy(request: NextRequest) {
 
   const currentPath = request.nextUrl.pathname;
 
+  let role = request.cookies.get("user_role")?.value;
+  if (user && !role) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    role = profile?.role;
+  }
+
   // Protect /dashboard (student)
   if (currentPath.startsWith("/dashboard")) {
     if (!user) {
@@ -44,15 +62,9 @@ export default async function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || profile.role !== "student") {
+    if (role !== "student") {
       // Redirect teachers/admins to their dashboard instead
-      if (profile && (profile.role === "teacher" || profile.role === "admin")) {
+      if (role === "teacher" || role === "admin") {
         const teacherDashboardUrl = request.nextUrl.clone();
         teacherDashboardUrl.pathname = "/teacher/dashboard";
         return NextResponse.redirect(teacherDashboardUrl);
@@ -71,13 +83,7 @@ export default async function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || (profile.role !== "teacher" && profile.role !== "admin")) {
+    if (role !== "teacher" && role !== "admin") {
       const homeUrl = request.nextUrl.clone();
       homeUrl.pathname = "/";
       return NextResponse.redirect(homeUrl);
@@ -92,13 +98,7 @@ export default async function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || !isAdminOrTeacher(profile.role as UserRole)) {
+    if (!isAdminOrTeacher(role as UserRole)) {
       const homeUrl = request.nextUrl.clone();
       homeUrl.pathname = "/";
       return NextResponse.redirect(homeUrl);
