@@ -70,6 +70,8 @@ export function ModuleManager({
             value={moduleForm.name}
             onChange={(e) => setModuleForm((s) => ({ ...s, name: e.target.value }))}
             disabled={busy}
+            maxLength={200}
+            placeholder={t("admin.name")}
           />
         </div>
         <div className="space-y-1">

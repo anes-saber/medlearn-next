@@ -29,7 +29,8 @@ export default function LoginForm() {
     
     if (signError) {
       setPending(false);
-      setError(t("login.error"));
+      console.error("Login error:", signError);
+      setError(signError.message || t("login.error"));
       return;
     }
 
@@ -50,7 +51,7 @@ export default function LoginForm() {
       }
 
       if (profile && (profile.role === "admin" || profile.role === "teacher")) {
-        router.push("/teacher/dashboard");
+        router.push("/teacher");
         router.refresh();
         return;
       } else if (profile && profile.role === "student") {

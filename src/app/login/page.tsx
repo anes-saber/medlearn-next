@@ -17,7 +17,7 @@ export default async function LoginPage() {
     if (profile?.role === 'student') {
       redirect("/dashboard");
     } else if (profile?.role === 'teacher' || profile?.role === 'admin') {
-      redirect("/teacher/dashboard");
+      redirect("/teacher");
     } else {
       redirect("/");
     }

@@ -14,7 +14,7 @@ export default function AdminResourcesView() {
   }
 
   return (
-    <div className="container space-y-8 py-10">
+    <div className="admin-page container space-y-8 py-10">
       <header className="space-y-1">
         <h1 className="font-heading text-2xl font-bold">{t("admin.nav.resources")}</h1>
         {adminData.error && (

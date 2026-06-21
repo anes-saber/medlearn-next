@@ -9,6 +9,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   PenLine,
+  Users,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/admin/questions", label: "admin.nav.questions",  icon: FileQuestion,    exact: false },
   { href: "/admin/quizzes",   label: "admin.nav.quizzes",    icon: PenLine,         exact: false },
   { href: "/admin/homework",  label: "admin.nav.homework",   icon: ClipboardList,   exact: false },
+  { href: "/admin/users",     label: "admin.nav.users",      icon: Users,           exact: false },
 ];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
@@ -52,9 +54,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               href={item.href}
               className="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150"
               style={active ? {
-                background: "hsla(151,100%,50%,0.12)",
-                color: "hsl(151,100%,55%)",
-                boxShadow: "inset 3px 0 0 hsl(151,100%,50%)",
+                background: "hsla(203,58%,45%,0.15)",
+                color: "hsl(203,58%,55%)",
+                boxShadow: "inset 3px 0 0 hsl(203,58%,55%)",
               } : {
                 color: "hsl(215,15%,55%)",
               }}
@@ -63,7 +65,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             >
               <item.icon
                 className="h-4 w-4 shrink-0 transition-colors"
-                style={{ color: active ? "hsl(151,100%,55%)" : undefined }}
+                style={{ color: active ? "hsl(203,58%,55%)" : undefined }}
                 aria-hidden
               />
               {t(item.label)}
@@ -99,7 +101,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 key={item.href}
                 href={item.href}
                 className="flex flex-col items-center gap-1 py-2 px-3 text-[10px] font-medium transition-colors min-w-[68px] flex-none"
-                style={{ color: active ? "hsl(151,100%,55%)" : "hsl(215,15%,45%)" }}
+                style={{ color: active ? "hsl(203,58%,55%)" : "hsl(215,15%,45%)" }}
               >
                 <item.icon className="h-5 w-5 shrink-0" aria-hidden />
                 <span className="leading-none text-center whitespace-nowrap">{t(item.label)}</span>

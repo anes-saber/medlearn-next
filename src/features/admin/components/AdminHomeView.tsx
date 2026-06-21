@@ -17,7 +17,7 @@ export default function AdminHomeView() {
   }
 
   return (
-    <div className="container space-y-12 py-12">
+    <div className="admin-page container space-y-12 py-12">
       <header className="space-y-2">
         <h1 className="font-heading text-3xl font-bold">{t("admin.title")}</h1>
         <p className="max-w-2xl text-sm text-muted-foreground">{t("admin.subtitle")}</p>

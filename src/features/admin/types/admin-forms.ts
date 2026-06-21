@@ -9,10 +9,46 @@ function isValidHttpUrl(raw: string): boolean {
   }
 }
 
-/** YouTube video IDs are typically 11 chars; allow a practical range. */
-function isValidYoutubeId(raw: string): boolean {
+/** YouTube video/playlist ID extraction from link or raw ID. */
+export function extractYoutubeId(input: string): string | null {
+  const clean = input.trim();
+  if (!clean) return null;
+
+  // 1. Check if it's already a raw ID (typically 11 for video, 18-64 for playlist)
+  if (/^[a-zA-Z0-9_-]{10,64}$/.test(clean)) {
+    return clean;
+  }
+
+  try {
+    const url = new URL(clean);
+    if (url.hostname.includes("youtube.com")) {
+      if (url.pathname === "/watch") {
+        return url.searchParams.get("v");
+      }
+      if (url.pathname === "/playlist") {
+        return url.searchParams.get("list");
+      }
+      if (url.pathname.startsWith("/embed/")) {
+        if (url.pathname === "/embed/videoseries") {
+          return url.searchParams.get("list");
+        }
+        return url.pathname.split("/")[2];
+      }
+    }
+    if (url.hostname === "youtu.be") {
+      return url.pathname.substring(1);
+    }
+  } catch {
+    // Not a valid URL
+  }
+
+  return null;
+}
+
+/** YouTube video and playlist IDs can range from 11 up to 64 chars. */
+export function isValidYoutubeId(raw: string): boolean {
   const v = raw.trim();
-  return /^[a-zA-Z0-9_-]{6,32}$/.test(v);
+  return /^[a-zA-Z0-9_-]{6,64}$/.test(v);
 }
 
 export function validateLanguageCode(raw: string): boolean {
@@ -73,9 +109,11 @@ export function validateResourcePayload(
     case "link":
       if (!isValidHttpUrl(payload.link)) return "validation.url";
       break;
-    case "youtube":
-      if (!isValidYoutubeId(payload.youtube_id)) return "validation.youtube";
+    case "youtube": {
+      const extracted = extractYoutubeId(payload.youtube_id);
+      if (!extracted || !isValidYoutubeId(extracted)) return "validation.youtube";
       break;
+    }
     case "text":
       if (!payload.content.trim()) return "validation.text";
       break;

@@ -7,13 +7,33 @@ import { isAdminOrTeacher, type UserRole } from "@/lib/rbac";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 import { rateLimit, rateLimitHeaders } from "@/lib/rateLimit";
 
+const COOKIE_SECURE = process.env.NODE_ENV === "production";
+
+/** Apply security headers to every response. */
+function applySecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+
+  // Strict-Transport-Security for production
+  if (COOKIE_SECURE) {
+    response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  }
+
+  return response;
+}
+
 export default async function proxy(request: NextRequest) {
+  // Rate limit POST requests
   if (request.method === "POST") {
-    const rl = await rateLimit(`proxy:${request.nextUrl.pathname}:${request.headers.get("x-forwarded-for") ?? "unknown"}`, 30, 60);
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    const rl = await rateLimit(`mw:${request.nextUrl.pathname}:${ip}`, 30, 60);
     if (!rl.success) {
       const response = NextResponse.json({ error: "Too Many Requests" }, { status: 429 });
       Object.entries(rateLimitHeaders(rl)).forEach(([k, v]) => response.headers.set(k, v));
-      return response;
+      return applySecurityHeaders(response);
     }
   }
 
@@ -32,7 +52,13 @@ export default async function proxy(request: NextRequest) {
           request,
         });
         cookiesToSet.forEach(({ name, value, options }) =>
-          supabaseResponse.cookies.set(name, value, options),
+          supabaseResponse.cookies.set(name, value, {
+            ...options,
+            httpOnly: true,
+            secure: COOKIE_SECURE,
+            sameSite: "lax",
+            path: "/",
+          }),
         );
       },
     },
@@ -59,19 +85,18 @@ export default async function proxy(request: NextRequest) {
     if (!user) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/login";
-      return NextResponse.redirect(loginUrl);
+      return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
     if (role !== "student") {
-      // Redirect teachers/admins to their dashboard instead
       if (role === "teacher" || role === "admin") {
         const teacherDashboardUrl = request.nextUrl.clone();
-        teacherDashboardUrl.pathname = "/teacher/dashboard";
-        return NextResponse.redirect(teacherDashboardUrl);
+        teacherDashboardUrl.pathname = "/teacher";
+        return applySecurityHeaders(NextResponse.redirect(teacherDashboardUrl));
       }
       const homeUrl = request.nextUrl.clone();
       homeUrl.pathname = "/";
-      return NextResponse.redirect(homeUrl);
+      return applySecurityHeaders(NextResponse.redirect(homeUrl));
     }
   }
 
@@ -80,13 +105,13 @@ export default async function proxy(request: NextRequest) {
     if (!user) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/login";
-      return NextResponse.redirect(loginUrl);
+      return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
     if (role !== "teacher" && role !== "admin") {
       const homeUrl = request.nextUrl.clone();
       homeUrl.pathname = "/";
-      return NextResponse.redirect(homeUrl);
+      return applySecurityHeaders(NextResponse.redirect(homeUrl));
     }
   }
 
@@ -95,17 +120,17 @@ export default async function proxy(request: NextRequest) {
     if (!user) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/login";
-      return NextResponse.redirect(loginUrl);
+      return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
     if (!isAdminOrTeacher(role as UserRole)) {
       const homeUrl = request.nextUrl.clone();
       homeUrl.pathname = "/";
-      return NextResponse.redirect(homeUrl);
+      return applySecurityHeaders(NextResponse.redirect(homeUrl));
     }
   }
 
-  return supabaseResponse;
+  return applySecurityHeaders(supabaseResponse);
 }
 
 export const config = {

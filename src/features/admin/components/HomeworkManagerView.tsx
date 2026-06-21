@@ -179,7 +179,7 @@ export default function HomeworkManagerView() {
   if (loading) return <div className="container py-12 text-muted-foreground">{t("admin.loading")}</div>;
 
   return (
-    <div className="container py-10 space-y-6">
+    <div className="admin-page container py-10 space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold">{t("admin.nav.homework")}</h1>

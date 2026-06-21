@@ -177,7 +177,7 @@ export default function QuizBuilderView() {
   if (loading) return <div className="container py-12 text-muted-foreground">{t("admin.loading")}</div>;
 
   return (
-    <div className="container py-10 space-y-6">
+    <div className="admin-page container py-10 space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold">{t("admin.nav.quizzes")}</h1>
@@ -356,7 +356,7 @@ export default function QuizBuilderView() {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      rules?.mode === "exam" ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                      rules?.mode === "exam" ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-emerald-700/15 text-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300"
                     }`}>{rules?.mode ?? "practice"}</span>
                     {!quiz.published && <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Draft</span>}
                     {rules?.timer_minutes && <span className="text-xs text-muted-foreground">⏱ {rules.timer_minutes}m</span>}

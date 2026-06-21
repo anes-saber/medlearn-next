@@ -363,7 +363,7 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
 
         {/* Options */}
         <div className="space-y-2.5">
-          {options.map(opt => {
+          {options.map((opt, idx) => {
             const selected = isSelected(currentQuestion.id, opt.id, currentQuestion.type);
             const correctOpt = showCorrectionNow && isCorrectOption(currentQuestion, opt.id);
             const wrongSelected = showCorrectionNow && selected && !correctOpt;
@@ -400,7 +400,7 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
                   className="inline-flex items-center justify-center rounded-md w-6 h-6 me-3 text-[11px] font-bold shrink-0 align-middle"
                   style={{ background: "hsl(220,12%,20%)", color: "hsl(215,15%,55%)" }}
                 >
-                  {opt.id}
+                  {String.fromCharCode(65 + idx)}
                 </span>
                 {opt.text}
               </button>

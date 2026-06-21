@@ -1,6 +1,7 @@
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { formatSupabaseError } from "@/lib/supabase/errors";
 import type { Database } from "@/types/database";
+import { extractYoutubeId } from "../types/admin-forms";
 
 export type MajorRow = Database["public"]["Tables"]["majors"]["Row"];
 export type ModuleRow = Database["public"]["Tables"]["modules"]["Row"];
@@ -32,7 +33,7 @@ function rowFromResourcePayload(payload: ResourcePayload): Database["public"]["T
     published: payload.published,
     file_url: payload.type === "file" ? payload.file_url.trim() || null : null,
     link: payload.type === "link" ? payload.link.trim() || null : null,
-    youtube_id: payload.type === "youtube" ? payload.youtube_id.trim() || null : null,
+    youtube_id: payload.type === "youtube" ? extractYoutubeId(payload.youtube_id) || payload.youtube_id.trim() || null : null,
     content: payload.type === "text" ? payload.content.trim() || null : null,
   };
 }

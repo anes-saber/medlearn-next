@@ -160,12 +160,13 @@ export function ResourceManager({
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium text-foreground">{t("admin.language")}</label>
-            <Input
-              placeholder="en"
-              value={resourceForm.language}
-              onChange={(e) => setResourceForm((s) => ({ ...s, language: e.target.value }))}
-              disabled={busy}
-            />
+          <Input
+            placeholder="en"
+            value={resourceForm.language}
+            onChange={(e) => setResourceForm((s) => ({ ...s, language: e.target.value }))}
+            disabled={busy}
+            maxLength={10}
+          />
           </div>
           <label className="flex h-10 items-center gap-2 rounded-md border border-input px-3 text-sm">
             <input
@@ -184,6 +185,8 @@ export function ResourceManager({
             value={resourceForm.title}
             onChange={(e) => setResourceForm((s) => ({ ...s, title: e.target.value }))}
             disabled={busy}
+            maxLength={500}
+            placeholder={t("admin.title_field")}
           />
         </div>
         <div className="space-y-1">
@@ -192,6 +195,8 @@ export function ResourceManager({
             value={resourceForm.description}
             onChange={(e) => setResourceForm((s) => ({ ...s, description: e.target.value }))}
             disabled={busy}
+            maxLength={5000}
+            placeholder={t("admin.description")}
           />
         </div>
 
@@ -243,8 +248,12 @@ export function ResourceManager({
             <Input
               value={resourceForm.youtube_id}
               onChange={(e) => setResourceForm((s) => ({ ...s, youtube_id: e.target.value }))}
+              placeholder="e.g. dQw4w9WgXcQ or https://www.youtube.com/playlist?list=..."
               disabled={busy}
             />
+            <p className="text-[10px] text-muted-foreground">
+              Supports raw Video ID, Playlist ID, or full YouTube Video/Playlist links (extracted automatically).
+            </p>
           </div>
         )}
         {resourceForm.type === "text" && (
@@ -466,15 +475,18 @@ export function ResourceManager({
                   />
                 )}
                 {resource.type === "youtube" && (
-                  <Input
-                    value={resource.youtube_id ?? ""}
-                    disabled={!isEdit || busy}
-                    onChange={(e) =>
-                      setResources((rows) =>
-                        rows.map((r) => (r.id === resource.id ? { ...r, youtube_id: e.target.value } : r)),
-                      )
-                    }
-                  />
+                  <div className="space-y-1 w-full">
+                    <Input
+                      value={resource.youtube_id ?? ""}
+                      disabled={!isEdit || busy}
+                      placeholder="e.g. dQw4w9WgXcQ or https://www.youtube.com/playlist?list=..."
+                      onChange={(e) =>
+                        setResources((rows) =>
+                          rows.map((r) => (r.id === resource.id ? { ...r, youtube_id: e.target.value } : r)),
+                        )
+                      }
+                    />
+                  </div>
                 )}
                 {resource.type === "text" && (
                   <textarea

@@ -108,21 +108,34 @@ export async function deleteHomework(id: string) {
 
 export async function gradeSubmission(id: string, grade: string, feedback: string) {
   const supabase = getBrowserSupabaseClient();
-  const { error } = await supabase.from("homework_submissions").update({ grade, feedback }).eq("id", id);
+  // Sanitize inputs
+  const cleanGrade = grade.trim().slice(0, 50);
+  const cleanFeedback = feedback.trim().slice(0, 10000);
+  const { error } = await supabase.from("homework_submissions").update({ grade: cleanGrade, feedback: cleanFeedback }).eq("id", id);
   if (error) throw new Error(formatSupabaseError(error));
 }
 
 export async function submitHomework(payload: SubmissionPayload) {
   const supabase = getBrowserSupabaseClient();
+
+  // Validate and sanitize inputs
+  const name = payload.submitter_name.trim().slice(0, 200);
+  const email = payload.submitter_email.trim().slice(0, 254);
+  const text = (payload.text_answer ?? "").trim().slice(0, 50000);
+  const fileUrl = (payload.file_url ?? "").trim().slice(0, 2048);
+  const linkUrl = (payload.link_url ?? "").trim().slice(0, 2048);
+
+  if (!name) throw new Error("Name is required");
+
   const submissionPayload: Record<string, string> = {};
-  if (payload.text_answer) submissionPayload.text = payload.text_answer;
-  if (payload.file_url) submissionPayload.file_url = payload.file_url;
-  if (payload.link_url) submissionPayload.link = payload.link_url;
+  if (text) submissionPayload.text = text;
+  if (fileUrl) submissionPayload.file_url = fileUrl;
+  if (linkUrl) submissionPayload.link = linkUrl;
 
   const { error } = await supabase.from("homework_submissions").insert({
     homework_id: payload.homework_id,
-    submitter_name: payload.submitter_name.trim() || null,
-    submitter_email: payload.submitter_email.trim() || null,
+    submitter_name: name || null,
+    submitter_email: email || null,
     submission_payload: submissionPayload,
   });
   if (error) throw new Error(formatSupabaseError(error));

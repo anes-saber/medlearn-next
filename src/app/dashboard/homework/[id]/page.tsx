@@ -29,11 +29,12 @@ export default async function HomeworkDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-5xl p-4 md:p-8 space-y-6 animate-fade-in">
+    <div className="student-page mx-auto max-w-5xl p-4 md:p-8 space-y-6 animate-fade-in">
       <div className="mb-4">
         <Link
           href="/dashboard/homework"
-          className="inline-flex items-center text-sm text-gray-400 hover:text-white"
+          className="inline-flex items-center text-sm hover:underline"
+          style={{ color: "hsl(215,15%,55%)" }}
         >
           <ChevronLeft className="h-4 w-4 mr-1" /> Back to Homework List
         </Link>

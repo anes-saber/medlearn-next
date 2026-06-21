@@ -1,8 +1,15 @@
 "use server";
 
 import { cookies } from "next/headers";
+import type { UserRole } from "@/lib/rbac";
+
+const VALID_ROLES: UserRole[] = ["admin", "teacher", "student"];
 
 export async function setRoleCookie(role: string) {
+  // Validate role before setting cookie
+  if (!VALID_ROLES.includes(role as UserRole)) {
+    return;
+  }
   const cookieStore = await cookies();
   cookieStore.set("user_role", role, {
     httpOnly: true,

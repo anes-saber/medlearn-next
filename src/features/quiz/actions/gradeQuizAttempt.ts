@@ -6,6 +6,8 @@ import type {
   GradedQuestionResult,
   QuizAnswerPayload,
 } from "@/features/quiz/types";
+import { isUUID } from "@/lib/sanitize";
+import { checkActionRateLimit, RATE_LIMITS } from "@/lib/serverRateLimit";
 
 function isAnswerCorrect(
   userAnswer: string | string[] | undefined,
@@ -32,7 +34,20 @@ export async function gradeQuizAttempt(
   quizId: string,
   answers: QuizAnswerPayload,
 ): Promise<GradeQuizAttemptResult | { error: string }> {
+  // Input validation
+  if (!isUUID(majorId) || !isUUID(moduleId) || !isUUID(quizId)) {
+    return { error: "Invalid IDs provided" };
+  }
+
   const supabase = await createServerSupabaseClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Rate limit
+  if (user) {
+    const blocked = await checkActionRateLimit("quiz-attempt", user.id, RATE_LIMITS["quiz-attempt"].limit, RATE_LIMITS["quiz-attempt"].window);
+    if (blocked) return { error: blocked.error };
+  }
 
   const { data: quiz } = await supabase
     .from("quizzes")
@@ -81,7 +96,6 @@ export async function gradeQuizAttempt(
   const correct = results.filter((r) => r.correct).length;
   const total = results.length;
 
-  const { data: { user } } = await supabase.auth.getUser();
   if (user) {
     await supabase.from("quiz_attempts").insert({
       quiz_id: quizId,

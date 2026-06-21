@@ -19,9 +19,9 @@ const cards = [
     label: "admin.nav.catalog",
     icon: GraduationCap,
     href: "/admin/catalog",
-    gradient: "from-emerald-500/20 to-emerald-600/5",
-    iconColor: "#00FF88",
-    glow: "0 0 24px hsla(151,100%,50%,0.12)",
+    gradient: "from-emerald-600/20 to-emerald-700/5",
+    iconColor: "#2D8659",
+    glow: "0 0 24px hsla(151,50%,35%,0.15)",
   },
   {
     key: "resources" as const,
@@ -66,7 +66,7 @@ export default function AdminDashboard({ initialStats }: { initialStats: Stats }
   const stats = initialStats;
 
   return (
-    <div className="px-6 py-8 space-y-8 animate-fade-in">
+    <div className="admin-page px-6 py-8 space-y-8 animate-fade-in">
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
@@ -83,7 +83,7 @@ export default function AdminDashboard({ initialStats }: { initialStats: Stats }
         </div>
         <div
           className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium"
-          style={{ background: "hsla(151,100%,50%,0.1)", color: "hsl(151,100%,55%)" }}
+          style={{ background: "hsla(151,50%,35%,0.12)", color: "hsl(151,50%,55%)" }}
         >
           <TrendingUp className="h-3.5 w-3.5" />
           Live

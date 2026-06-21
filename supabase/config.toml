@@ -1,0 +1,8 @@
+# anes-saber's Project — zjueqlqbbykckqtidmqz
+# CLI must be logged in as sbranas430@gmail.com (Domain-anes org)
+# Run: npm run db:link
+
+project_id = "zjueqlqbbykckqtidmqz"
+
+[db]
+major_version = 17

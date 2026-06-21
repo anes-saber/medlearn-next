@@ -120,7 +120,10 @@ const ResourceCard = ({ resource }: { resource: ResourceRow }) => {
             <div className="mt-6 overflow-hidden rounded-xl border bg-black" style={{ borderColor: "hsl(220,12%,18%)", maxWidth: "65ch" }}>
               <div className="aspect-video relative">
                 <iframe
-                  src={`https://www.youtube.com/embed/${resource.youtube_id}`}
+                  src={resource.youtube_id.length !== 11
+                    ? `https://www.youtube.com/embed/videoseries?list=${resource.youtube_id}`
+                    : `https://www.youtube.com/embed/${resource.youtube_id}`
+                  }
                   className="absolute inset-0 h-full w-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

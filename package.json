@@ -7,12 +7,15 @@
     "dev:insecure": "set NODE_TLS_REJECT_UNAUTHORIZED=0 && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:link": "powershell -ExecutionPolicy Bypass -File ./scripts/supabase-link.ps1",
+    "db:push": "powershell -ExecutionPolicy Bypass -File ./scripts/supabase-db-push.ps1",
+    "db:bundle": "powershell -ExecutionPolicy Bypass -File ./scripts/bundle-migrations.ps1"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
-    "@supabase/ssr": "^0.10.0",
-    "@supabase/supabase-js": "^2.101.1",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.108.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.7.0",

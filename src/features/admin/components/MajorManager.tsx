@@ -47,6 +47,8 @@ export function MajorManager({
             value={majorForm.name}
             onChange={(e) => setMajorForm((s) => ({ ...s, name: e.target.value }))}
             disabled={busy}
+            maxLength={200}
+            placeholder={t("admin.name")}
           />
         </div>
         <div className="space-y-1">

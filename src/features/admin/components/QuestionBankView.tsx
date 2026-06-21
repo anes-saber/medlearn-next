@@ -29,8 +29,8 @@ const TYPE_OPTIONS: { value: QuestionType; label: string }[] = [
 
 const DIFF_OPTIONS = ["easy", "medium", "hard"] as const;
 
-function newOption(): QuestionOption {
-  return { id: crypto.randomUUID().slice(0, 4).toUpperCase(), text: "" };
+function newOption(index: number = 0): QuestionOption {
+  return { id: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[index % 26] || String(index + 1), text: "" };
 }
 
 function emptyPayload(): QuestionPayload {
@@ -41,7 +41,7 @@ function emptyPayload(): QuestionPayload {
     statement_en: "",
     statement_fr: "",
     statement_ar: "",
-    options: [newOption(), newOption(), newOption(), newOption()],
+    options: [0, 1, 2, 3].map(i => newOption(i)),
     correct_answer: "",
     explanation_en: "",
     explanation_fr: "",
@@ -218,7 +218,7 @@ export default function QuestionBankView() {
   if (loading) return <div className="container py-12 text-muted-foreground">{t("admin.loading")}</div>;
 
   return (
-    <div className="container py-10 space-y-6">
+    <div className="admin-page container py-10 space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold">{t("admin.nav.questions")}</h1>
