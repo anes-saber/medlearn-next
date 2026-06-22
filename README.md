@@ -19,9 +19,9 @@
 
 ## Tech Stack
 
-- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Framework:** [Next.js 15+](https://nextjs.org/) (App Router)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL + Row Level Security)
 - **Deployment:** [Vercel](https://vercel.com/)
 
@@ -29,8 +29,9 @@
 
 ### Prerequisites
 
-- Node.js 20+
-- A [Supabase](https://supabase.com/) project with a database
+- Node.js 18+
+- npm or yarn
+- A [Supabase](https://supabase.com/) account with a project
 
 ### Installation
 
@@ -52,8 +53,8 @@
    Edit `.env.local` with your Supabase credentials:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-anon-key
-   SUPABASE_DB_PASSWORD=your-database-password
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
    ```
 
 4. **Run the development server:**
@@ -72,7 +73,7 @@ src/
     teacher/              # Teacher dashboard (grading)
     admin/                # Admin panel (catalog, resources, questions, quizzes, homework, users)
     majors/               # Public course catalog
-    login/ & signup/      # Authentication pages
+    (auth)/               # Authentication pages (login, signup)
   components/             # Shared UI components (Button, Input, Card, etc.)
   features/               # Feature modules
     auth/                 # Login, signup, cookie management
@@ -83,8 +84,8 @@ src/
     quiz/                 # Quiz attempt + grading logic
   lib/                    # Utilities
     supabase/             # Supabase client setup (server, browser, middleware)
-    rbac.ts               # Role-based access control types
-    rateLimit.ts          # Upstash Redis rate limiting
+    rbac.ts               # Role-based access control
+    rateLimit.ts          # Rate limiting with Upstash Redis
     sanitize.ts           # Input sanitization
     validateFile.ts       # File upload validation
   contexts/               # React contexts (Auth, Language)
@@ -98,7 +99,8 @@ src/
 | `npm run dev` | Start development server |
 | `npm run build` | Production build |
 | `npm start` | Start production server |
-| `npx tsc --noEmit` | Type check |
+| `npm run lint` | Run ESLint |
+| `npm run type-check` | TypeScript type checking |
 
 ## Security
 
@@ -111,7 +113,7 @@ src/
 
 ## Deployment
 
-Push to `main` to trigger automatic deployment via Vercel. See `.github/workflows/ci.yml` for the CI/CD pipeline (lint, typecheck, build, deploy).
+Push to `main` to trigger automatic deployment via Vercel. CI/CD pipeline runs lint, type check, build, and deploy.
 
 ## License
 
