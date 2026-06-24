@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
     )
     // Simple query to verify connection
-    const { error } = await supabase.from('users').select('id').limit(1)
+    const { error } = await supabase.from('profiles').select('id').limit(1)
     const dbStatus = error ? 'disconnected' : 'connected'
     res.status(200).json({
       status: 'ok',

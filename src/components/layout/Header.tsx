@@ -27,10 +27,15 @@ export default function Header() {
     { href: "/majors", label: t("nav.majors") },
   ];
 
-  const authLinks = isAdminOrTeacher(role) ? [
-    { href: "/teacher", label: t("nav.teacher") },
-    { href: "/admin", label: t("nav.admin") },
-  ] : [];
+  const teacherLink = isAdminOrTeacher(role)
+    ? [{ href: "/teacher", label: t("nav.teacher") }]
+    : [];
+
+  const adminLink = role === "admin"
+    ? [{ href: "/admin", label: t("nav.admin") }]
+    : [];
+
+  const authLinks = [...teacherLink, ...adminLink];
 
   const allLinks = [...publicLinks, ...authLinks];
 
