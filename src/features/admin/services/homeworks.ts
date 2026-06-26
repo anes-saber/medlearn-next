@@ -1,6 +1,6 @@
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { formatSupabaseError } from "@/lib/supabase/errors";
-import type { Database } from "@/types/database";
+import type { Database, Json } from "@/types/database";
 
 export type HomeworkRow = Database["public"]["Tables"]["homeworks"]["Row"];
 export type HomeworkSubmissionRow = Database["public"]["Tables"]["homework_submissions"]["Row"];
@@ -75,7 +75,7 @@ export async function createHomework(payload: HomeworkPayload) {
     description_ar: payload.description_ar.trim() || null,
     due_at: payload.due_at,
     attachment_urls: payload.attachment_urls,
-    rules_json: payload.rules as any,
+    rules_json: payload.rules as unknown as Json,
     published: payload.published,
   });
   if (error) throw new Error(formatSupabaseError(error));
@@ -94,7 +94,7 @@ export async function updateHomework(id: string, payload: HomeworkPayload) {
     description_ar: payload.description_ar.trim() || null,
     due_at: payload.due_at,
     attachment_urls: payload.attachment_urls,
-    rules_json: payload.rules as any,
+    rules_json: payload.rules as unknown as Json,
     published: payload.published,
   }).eq("id", id);
   if (error) throw new Error(formatSupabaseError(error));

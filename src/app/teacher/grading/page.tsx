@@ -19,7 +19,7 @@ export default async function TeacherGradingPage() {
     .is("grade", null) // Assuming pending means grade is null
     .order("submitted_at", { ascending: false });
 
-  const getLangTitle = (obj: any) => obj?.title_en || obj?.title_fr || obj?.title_ar || "Untitled";
+  const getLangTitle = (obj: { title_en?: string | null; title_fr?: string | null; title_ar?: string | null } | null | undefined) => obj?.title_en || obj?.title_fr || obj?.title_ar || "Untitled";
 
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-8 space-y-8 animate-fade-in">
@@ -41,7 +41,7 @@ export default async function TeacherGradingPage() {
           <CardContent>
             {pendingSubmissions && pendingSubmissions.length > 0 ? (
               <div className="space-y-4">
-                {pendingSubmissions.map((sub: any) => (
+                {pendingSubmissions.map((sub) => (
                   <Link href={`/teacher/grading/${sub.id}`} key={sub.id}>
                     <div className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-gray-800 bg-[#222] hover:border-emerald-500/50 p-4 rounded-lg transition-colors cursor-pointer mb-3">
                       <div>

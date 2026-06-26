@@ -1,6 +1,6 @@
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { formatSupabaseError } from "@/lib/supabase/errors";
-import type { Database } from "@/types/database";
+import type { Database, Json } from "@/types/database";
 
 export type QuestionRow = Database["public"]["Tables"]["questions"]["Row"];
 export type QuestionType = "scq" | "mcq" | "truefalse";
@@ -47,8 +47,8 @@ export async function createQuestion(payload: QuestionPayload) {
     statement_en: payload.statement_en.trim() || null,
     statement_fr: payload.statement_fr.trim() || null,
     statement_ar: payload.statement_ar.trim() || null,
-    options_json: payload.options as any,
-    correct_answer: payload.correct_answer,
+    options_json: payload.options as unknown as Json,
+    correct_answer: payload.correct_answer as unknown as Json,
     explanation_en: payload.explanation_en.trim() || null,
     explanation_fr: payload.explanation_fr.trim() || null,
     explanation_ar: payload.explanation_ar.trim() || null,
@@ -68,8 +68,8 @@ export async function updateQuestion(id: string, payload: QuestionPayload) {
     statement_en: payload.statement_en.trim() || null,
     statement_fr: payload.statement_fr.trim() || null,
     statement_ar: payload.statement_ar.trim() || null,
-    options_json: payload.options as any,
-    correct_answer: payload.correct_answer,
+    options_json: payload.options as unknown as Json,
+    correct_answer: payload.correct_answer as unknown as Json,
     explanation_en: payload.explanation_en.trim() || null,
     explanation_fr: payload.explanation_fr.trim() || null,
     explanation_ar: payload.explanation_ar.trim() || null,

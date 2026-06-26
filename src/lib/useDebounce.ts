@@ -1,15 +1,15 @@
 import { useCallback, useRef, useEffect } from "react";
 
-/**
- * Debounce a function call. Returns a stable debounced version.
- */
-export function useDebounce<T extends (...args: any[]) => void>(
+export function useDebounce<T extends (...args: Parameters<T>) => void>(
   fn: T,
   delayMs: number,
 ): T {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fnRef = useRef(fn);
-  fnRef.current = fn;
+
+  useEffect(() => {
+    fnRef.current = fn;
+  }, [fn]);
 
   useEffect(() => {
     return () => {
@@ -18,7 +18,7 @@ export function useDebounce<T extends (...args: any[]) => void>(
   }, []);
 
   return useCallback(
-    (...args: any[]) => {
+    (...args: Parameters<T>) => {
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => fnRef.current(...args), delayMs);
     },
@@ -26,19 +26,19 @@ export function useDebounce<T extends (...args: any[]) => void>(
   ) as T;
 }
 
-/**
- * Throttle a function call. Returns a stable throttled version.
- */
-export function useThrottle<T extends (...args: any[]) => void>(
+export function useThrottle<T extends (...args: Parameters<T>) => void>(
   fn: T,
   delayMs: number,
 ): T {
   const lastCallRef = useRef(0);
   const fnRef = useRef(fn);
-  fnRef.current = fn;
+
+  useEffect(() => {
+    fnRef.current = fn;
+  }, [fn]);
 
   return useCallback(
-    (...args: any[]) => {
+    (...args: Parameters<T>) => {
       const now = Date.now();
       if (now - lastCallRef.current >= delayMs) {
         lastCallRef.current = now;

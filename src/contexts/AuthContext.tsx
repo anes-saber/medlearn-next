@@ -77,7 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user || !supabase) {
-      setRole(null);
       return;
     }
 

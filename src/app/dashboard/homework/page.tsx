@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { ClipboardList, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default async function StudentHomeworkPage() {
@@ -32,7 +32,7 @@ export default async function StudentHomeworkPage() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {homeworks && homeworks.length > 0 ? homeworks.map((hw: any) => (
+        {homeworks && homeworks.length > 0 ? homeworks.map((hw) => (
           <Link key={hw.id} href={`/dashboard/homework/${hw.id}`}>
             <Card className="card-hover border-[#4a4a4a] transition-all h-full flex flex-col cursor-pointer"
               style={{ background: "hsl(220,14%,10%)" }}>

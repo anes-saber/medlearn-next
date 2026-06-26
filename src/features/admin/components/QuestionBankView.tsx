@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -212,8 +212,6 @@ export default function QuestionBankView() {
     { id: "true", text: "True" },
     { id: "false", text: "False" },
   ];
-
-  const displayOptions = payload.type === "truefalse" ? tfOptions : payload.options;
 
   if (loading) return <div className="container py-12 text-muted-foreground">{t("admin.loading")}</div>;
 

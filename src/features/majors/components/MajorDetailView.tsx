@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, ChevronRight, Search, FileText, PenLine, ClipboardList } from "lucide-react";
+import { BookOpen, ChevronRight, Search, FileText } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { MajorRow, ModuleRow } from "@/features/majors/services/browse";

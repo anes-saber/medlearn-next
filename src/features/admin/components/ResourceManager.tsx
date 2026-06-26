@@ -72,15 +72,12 @@ export function ResourceManager({
   const [replacementFile, setReplacementFile] = useState<File | null>(null);
 
   useEffect(() => {
-    setReplacementFile(null);
-  }, [editingResource]);
-
-  // Sync initial major if not set
-  useEffect(() => {
     if (!resourceForm.major_id && majors.length > 0) {
       const firstMajor = majors[0].id;
       const firstModule = modules.find((m) => m.major_id === firstMajor)?.id ?? "";
-      setResourceForm((prev) => ({ ...prev, major_id: firstMajor, module_id: firstModule }));
+      queueMicrotask(() => {
+        setResourceForm((prev) => ({ ...prev, major_id: firstMajor, module_id: firstModule }));
+      });
     }
   }, [majors, modules, resourceForm.major_id]);
 
@@ -555,6 +552,7 @@ export function ResourceManager({
                           const err = validateResourcePayload(payload, modules);
                           if (err) throw new Error(t(err));
                           await updateResource(resource.id, payload);
+                          setReplacementFile(null);
                           setEditingResource(null);
                           setNotice({ tone: "success", text: t("admin.save") });
                         });
@@ -568,7 +566,7 @@ export function ResourceManager({
                       type="button"
                       variant="outline"
                       disabled={busy}
-                      onClick={() => setEditingResource(resource.id)}
+                      onClick={() => { setReplacementFile(null); setEditingResource(resource.id); }}
                     >
                       {t("admin.edit")}
                     </Button>

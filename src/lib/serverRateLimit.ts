@@ -1,4 +1,4 @@
-import { rateLimit, rateLimitHeaders } from "@/lib/rateLimit";
+import { rateLimit } from "@/lib/rateLimit";
 
 /**
  * Wraps a server action with rate limiting.

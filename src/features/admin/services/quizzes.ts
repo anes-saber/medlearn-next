@@ -1,6 +1,6 @@
 import { getBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { formatSupabaseError } from "@/lib/supabase/errors";
-import type { Database } from "@/types/database";
+import type { Database, Json } from "@/types/database";
 
 export type QuizRow = Database["public"]["Tables"]["quizzes"]["Row"];
 export type QuizQuestionRow = Database["public"]["Tables"]["quiz_questions"]["Row"];
@@ -70,7 +70,7 @@ export async function createQuiz(payload: QuizPayload): Promise<string> {
     title_en: payload.title_en.trim() || null,
     title_fr: payload.title_fr.trim() || null,
     title_ar: payload.title_ar.trim() || null,
-    rules_json: payload.rules as any,
+    rules_json: payload.rules as unknown as Json,
     published: payload.published,
   }).select("id").single();
   if (error) throw new Error(formatSupabaseError(error));
@@ -86,7 +86,7 @@ export async function updateQuiz(id: string, payload: QuizPayload) {
     title_en: payload.title_en.trim() || null,
     title_fr: payload.title_fr.trim() || null,
     title_ar: payload.title_ar.trim() || null,
-    rules_json: payload.rules as any,
+    rules_json: payload.rules as unknown as Json,
     published: payload.published,
   }).eq("id", id);
   if (error) throw new Error(formatSupabaseError(error));

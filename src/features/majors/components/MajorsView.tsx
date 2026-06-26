@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { GraduationCap, BookOpen, Search, ChevronRight } from "lucide-react";
+import { GraduationCap, Search, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { MajorRow } from "@/features/majors/services/browse";

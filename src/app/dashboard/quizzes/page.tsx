@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { PenLine, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default async function StudentQuizzesPage() {
@@ -32,7 +32,7 @@ export default async function StudentQuizzesPage() {
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {quizzes && quizzes.length > 0 ? quizzes.map((quiz: any) => (
+        {quizzes && quizzes.length > 0 ? quizzes.map((quiz) => (
           <Link key={quiz.id} href={`/dashboard/quizzes/${quiz.id}/take`}>
             <Card className="card-hover border-[#4a4a4a] transition-all h-full flex flex-col cursor-pointer"
               style={{ background: "hsl(220,14%,10%)" }}>

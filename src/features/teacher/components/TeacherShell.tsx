@@ -3,20 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ClipboardList,
   LayoutDashboard,
   CheckCircle,
 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const navItems = [
   { href: "/teacher",          label: "Dashboard",  icon: LayoutDashboard, exact: true },
   { href: "/teacher/grading",  label: "Grading",    icon: CheckCircle,     exact: false },
 ];
 
-export default function TeacherShell({ children }: { children: React.ReactNode, user: any, profile: any }) {
+export default function TeacherShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { t } = useLanguage();
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">

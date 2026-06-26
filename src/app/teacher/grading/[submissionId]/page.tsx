@@ -29,7 +29,7 @@ export default async function GradingDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const getLangTitle = (obj: any) => obj?.title_en || obj?.title_fr || obj?.title_ar || "Untitled";
+  const getLangTitle = (obj: { title_en?: string | null; title_fr?: string | null; title_ar?: string | null } | null | undefined) => obj?.title_en || obj?.title_fr || obj?.title_ar || "Untitled";
 
   return (
     <div className="mx-auto max-w-4xl p-4 md:p-8 space-y-6 animate-fade-in">

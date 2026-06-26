@@ -517,16 +517,8 @@ function readStoredLanguage(): Language | null {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const stored = readStoredLanguage();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setLanguageState(stored);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setReady(true);
-  }, []);
+  const [language, setLanguageState] = useState<Language>(() => readStoredLanguage() ?? "en");
+  const [ready] = useState(true);
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);

@@ -4,7 +4,6 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isAdminOrTeacher, type UserRole } from "@/lib/rbac";
 import { revalidatePath } from "next/cache";
 import { checkActionRateLimit, RATE_LIMITS } from "@/lib/serverRateLimit";
-import { sanitizeText } from "@/lib/sanitize";
 
 const VALID_ROLES: UserRole[] = ["admin", "teacher", "student"];
 

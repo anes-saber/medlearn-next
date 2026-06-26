@@ -1,7 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ClipboardList, BookOpen, PenLine } from "lucide-react";
-import Link from "next/link";
+import { ClipboardList, PenLine } from "lucide-react";
 
 export default async function TeacherDashboardPage() {
   const supabase = await createServerSupabaseClient();
@@ -30,7 +29,7 @@ export default async function TeacherDashboardPage() {
     .order("submitted_at", { ascending: false })
     .limit(5);
 
-  const getLangTitle = (obj: any) => obj?.title_en || obj?.title_fr || obj?.title_ar || "Untitled";
+  const getLangTitle = (obj: { title_en?: string | null; title_fr?: string | null; title_ar?: string | null } | null | undefined) => obj?.title_en || obj?.title_fr || obj?.title_ar || "Untitled";
 
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-8 space-y-8 animate-fade-in">
@@ -53,7 +52,7 @@ export default async function TeacherDashboardPage() {
           <CardContent>
             {recentAttempts && recentAttempts.length > 0 ? (
               <div className="space-y-4">
-                {recentAttempts.map((attempt: any) => (
+                {recentAttempts.map((attempt) => (
                   <div key={attempt.id} className="flex flex-col gap-1 border-b border-gray-800 pb-3 last:border-0 last:pb-0">
                     <p className="text-sm font-medium text-white truncate">
                       {getLangTitle(attempt.quizzes)}
@@ -82,7 +81,7 @@ export default async function TeacherDashboardPage() {
           <CardContent>
             {recentSubmissions && recentSubmissions.length > 0 ? (
               <div className="space-y-4">
-                {recentSubmissions.map((sub: any) => (
+                {recentSubmissions.map((sub) => (
                   <div key={sub.id} className="flex flex-col gap-1 border-b border-gray-800 pb-3 last:border-0 last:pb-0">
                     <p className="text-sm font-medium text-white truncate">
                       {getLangTitle(sub.homeworks)}

@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Trophy } from "lucide-react";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -35,7 +34,7 @@ export default async function QuizResultPage({ params }: PageProps) {
   }
 
   const quiz = attempt.quizzes;
-  const rules = quiz?.rules_json as any || {};
+  const rules = (quiz?.rules_json ?? {}) as { mode?: string; pass_mark?: number | null; timer_minutes?: number | null };
   const pct = attempt.total > 0 ? Math.round((attempt.score / attempt.total) * 100) : 0;
   const passed = rules.pass_mark != null ? pct >= rules.pass_mark : null;
   const pctColor = pct >= 70 ? "#2D8659" : pct >= 50 ? "#F39C12" : "#D63031";
