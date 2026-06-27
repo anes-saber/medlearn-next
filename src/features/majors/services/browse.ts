@@ -10,38 +10,48 @@ export type ResourceRow = Database["public"]["Tables"]["resources"]["Row"];
 export type QuizRow = Database["public"]["Tables"]["quizzes"]["Row"];
 export type HomeworkRow = Database["public"]["Tables"]["homeworks"]["Row"];
 
-export async function getMajorsOrdered(): Promise<MajorRow[]> {
-  const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("majors")
-    .select("*")
-    .order("order", { ascending: true });
+export const getMajorsOrdered = unstable_cache(
+  async (): Promise<MajorRow[]> => {
+    const { url, anonKey } = getSupabaseEnv();
+    const supabase = createClient<Database>(url, anonKey);
+    const { data, error } = await supabase
+      .from("majors")
+      .select("*")
+      .order("order", { ascending: true });
 
-  if (error) {
-    console.error("getMajorsOrdered", error.message);
-    return [];
-  }
-  return data ?? [];
-}
+    if (error) {
+      console.error("getMajorsOrdered", error.message);
+      return [];
+    }
+    return data ?? [];
+  },
+  ["majors-ordered"],
+  { revalidate: 3600 },
+);
 
-export async function getHomeStats(): Promise<{
-  majors: number;
-  modules: number;
-  resources: number;
-}> {
-  const supabase = await createServerSupabaseClient();
-  const [majorsRes, modulesRes, resourcesRes] = await Promise.all([
-    supabase.from("majors").select("id", { count: "exact", head: true }),
-    supabase.from("modules").select("id", { count: "exact", head: true }),
-    supabase.from("resources").select("id", { count: "exact", head: true }).eq("published", true),
-  ]);
+export const getHomeStats = unstable_cache(
+  async (): Promise<{
+    majors: number;
+    modules: number;
+    resources: number;
+  }> => {
+    const { url, anonKey } = getSupabaseEnv();
+    const supabase = createClient<Database>(url, anonKey);
+    const [majorsRes, modulesRes, resourcesRes] = await Promise.all([
+      supabase.from("majors").select("id", { count: "exact", head: true }),
+      supabase.from("modules").select("id", { count: "exact", head: true }),
+      supabase.from("resources").select("id", { count: "exact", head: true }).eq("published", true),
+    ]);
 
-  return {
-    majors: majorsRes.count ?? 0,
-    modules: modulesRes.count ?? 0,
-    resources: resourcesRes.count ?? 0,
-  };
-}
+    return {
+      majors: majorsRes.count ?? 0,
+      modules: modulesRes.count ?? 0,
+      resources: resourcesRes.count ?? 0,
+    };
+  },
+  ["home-stats"],
+  { revalidate: 3600 },
+);
 
 export const getModuleCountsByMajor = unstable_cache(
   async (): Promise<Record<string, number>> => {

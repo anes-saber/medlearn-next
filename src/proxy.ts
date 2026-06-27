@@ -23,6 +23,12 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
+const AUTH_ROUTES = ["/dashboard", "/teacher", "/admin", "/login", "/signup"];
+
+function needsAuth(pathname: string) {
+  return AUTH_ROUTES.some((route) => pathname.startsWith(route));
+}
+
 export default async function proxy(request: NextRequest) {
   if (request.method === "POST") {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
@@ -35,6 +41,10 @@ export default async function proxy(request: NextRequest) {
   }
 
   let supabaseResponse = NextResponse.next({ request });
+
+  if (!needsAuth(request.nextUrl.pathname)) {
+    return applySecurityHeaders(supabaseResponse);
+  }
 
   const { url, anonKey } = getSupabaseEnv();
 
