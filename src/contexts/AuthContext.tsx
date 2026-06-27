@@ -22,7 +22,7 @@ interface AuthContextType {
   role: UserRole | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ data?: unknown; error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string) => Promise<{ data: { user: User | null; session: Session | null } | null; error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -116,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     if (!supabase) {
-      return { error: new Error("Supabase is not configured.") };
+      return { data: null, error: new Error("Supabase is not configured.") };
     }
     const { error, data } = await supabase.auth.signUp({
       email,

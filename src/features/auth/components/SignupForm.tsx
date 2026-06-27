@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UserPlus } from "lucide-react";
+import { UserPlus, MailCheck } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -18,13 +18,15 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setConfirmationSent(false);
     setPending(true);
 
-    const { error: signError } = await signUp(email.trim(), password, fullName.trim());
+    const { data, error: signError } = await signUp(email.trim(), password, fullName.trim());
 
     if (signError) {
       setPending(false);
@@ -32,20 +34,31 @@ export default function SignUpForm() {
       return;
     }
 
+    // If no session, email confirmation is required
+    if (!data?.session) {
+      setPending(false);
+      setConfirmationSent(true);
+      return;
+    }
+
     const { getBrowserSupabaseClient } = await import("@/lib/supabase/browser");
     const supabase = getBrowserSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+    if (!user) {
+      setPending(false);
+      setError("Session could not be established. Please try signing in.");
+      return;
+    }
 
-      if (profile?.role) {
-        await setRoleCookie(profile.role);
-      }
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role) {
+      await setRoleCookie(profile.role);
     }
 
     setPending(false);
@@ -127,15 +140,26 @@ export default function SignUpForm() {
               </div>
             )}
 
-            <div className="pt-2">
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-semibold shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] hover:from-emerald-400 hover:to-emerald-600 transition-all duration-200" 
-                disabled={pending}
-              >
-                {pending ? "Creating account..." : "Sign Up"}
-              </Button>
-            </div>
+            {confirmationSent ? (
+              <div className="rounded-md border border-emerald-900/50 bg-emerald-950/20 p-6 text-center">
+                <MailCheck className="mx-auto mb-3 h-10 w-10 text-emerald-400" />
+                <p className="text-sm font-medium text-emerald-300">Check your email</p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  We&apos;ve sent a confirmation link to <span className="font-medium text-emerald-400">{email}</span>.
+                  Please check your inbox and click the link to activate your account.
+                </p>
+              </div>
+            ) : (
+              <div className="pt-2">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-semibold shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] hover:from-emerald-400 hover:to-emerald-600 transition-all duration-200" 
+                  disabled={pending}
+                >
+                  {pending ? "Creating account..." : "Sign Up"}
+                </Button>
+              </div>
+            )}
             
             <div className="mt-4 text-center">
               <Link href="/login" className="text-xs font-medium text-emerald-400 hover:text-emerald-300">

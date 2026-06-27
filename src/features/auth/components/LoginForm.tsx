@@ -39,38 +39,39 @@ export default function LoginForm() {
     const supabase = getBrowserSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (profile?.role) {
-        await setRoleCookie(profile.role);
-      }
-
-      if (profile && profile.role === "admin") {
-        router.push("/admin");
-        router.refresh();
-        return;
-      } else if (profile && profile.role === "teacher") {
-        router.push("/teacher");
-        router.refresh();
-        return;
-      } else if (profile && profile.role === "student") {
-        router.push("/dashboard");
-        router.refresh();
-        return;
-      } else {
-        // Fallback for general users
-        router.push("/");
-        router.refresh();
-        return;
-      }
+    if (!user) {
+      setPending(false);
+      setError("Session could not be established. Please try again.");
+      return;
     }
 
-    setPending(false);
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.role) {
+      await setRoleCookie(profile.role);
+    }
+
+    if (profile && profile.role === "admin") {
+      router.push("/admin");
+      router.refresh();
+      return;
+    } else if (profile && profile.role === "teacher") {
+      router.push("/teacher");
+      router.refresh();
+      return;
+    } else if (profile && profile.role === "student") {
+      router.push("/dashboard");
+      router.refresh();
+      return;
+    }
+
+    // Fallback for users without a recognized role profile
+    router.push("/");
+    router.refresh();
   }
 
   return (
