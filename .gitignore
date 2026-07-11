@@ -42,5 +42,15 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# supabase build artifacts
+supabase/ALL_MIGRATIONS.sql
+supabase/.temp/
+
+# test artifacts
+test.txt
+
 .vercel
 .env*
+
+# third-party scripts
+scripts/testsprite-run.mjs

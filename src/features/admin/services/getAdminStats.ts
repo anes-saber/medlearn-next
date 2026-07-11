@@ -9,13 +9,12 @@ export const getAdminStats = unstable_cache(
   async () => {
     const { url, anonKey } = getSupabaseEnv();
     const supabase = createClient<Database>(url, anonKey);
-    const [maj, mod, res, q, qz, hw] = await Promise.all([
+    const [maj, mod, res, q, qz] = await Promise.all([
       supabase.from("majors").select("id", { count: "exact", head: true }),
       supabase.from("modules").select("id", { count: "exact", head: true }),
       supabase.from("resources").select("id", { count: "exact", head: true }),
       supabase.from("questions").select("id", { count: "exact", head: true }),
       supabase.from("quizzes").select("id", { count: "exact", head: true }),
-      supabase.from("homeworks").select("id", { count: "exact", head: true }),
     ]);
 
     return {
@@ -24,7 +23,6 @@ export const getAdminStats = unstable_cache(
       resources: res.count ?? 0,
       questions: q.count ?? 0,
       quizzes: qz.count ?? 0,
-      homeworks: hw.count ?? 0,
     };
   },
   ["admin-dashboard-stats"],

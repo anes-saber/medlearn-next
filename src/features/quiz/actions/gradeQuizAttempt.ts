@@ -75,7 +75,7 @@ export async function gradeQuizAttempt(
   const { data: questions, error } = await supabase
     .from("questions")
     .select(
-      "id, correct_answer, explanation_en, explanation_fr, explanation_ar, published",
+      "id, correct_answer, explanation_en, explanation_fr, published",
     )
     .in("id", questionIds)
     .eq("published", true);
@@ -90,7 +90,6 @@ export async function gradeQuizAttempt(
     correctOptionIds: correctOptionIdsFromAnswer(q.correct_answer),
     explanation_en: q.explanation_en,
     explanation_fr: q.explanation_fr,
-    explanation_ar: q.explanation_ar,
   }));
 
   const correct = results.filter((r) => r.correct).length;

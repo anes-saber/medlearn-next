@@ -7,7 +7,6 @@ import {
   getModuleById,
   getPublishedResourcesForModule,
   getPublishedQuizzesForModule,
-  getPublishedHomeworksForModule,
 } from "@/features/majors/services/browse";
 
 type PageProps = {
@@ -24,10 +23,9 @@ export default async function ModuleResourcesPage({ params, searchParams }: Page
     notFound();
   }
 
-  const [resources, quizzes, homeworks] = await Promise.all([
+  const [resources, quizzes] = await Promise.all([
     getPublishedResourcesForModule(majorId, moduleId),
     getPublishedQuizzesForModule(majorId, moduleId),
-    getPublishedHomeworksForModule(majorId, moduleId),
   ]);
 
   return (
@@ -36,8 +34,7 @@ export default async function ModuleResourcesPage({ params, searchParams }: Page
       majorId={majorId}
       resources={resources}
       quizzes={quizzes}
-      homeworks={homeworks}
-      initialTab={(tab === "quizzes" || tab === "homework") ? tab : "resources"}
+      initialTab={tab === "quizzes" ? tab : "resources"}
     />
   );
 }

@@ -6,9 +6,14 @@
  * alike.
  */
 
-export type UserRole = "admin" | "teacher" | "student";
+export type UserRole = "admin" | "teacher" | "paid-student" | "unpaid-student";
 
 /** Returns `true` when the role has content-management permissions. */
 export function isAdminOrTeacher(role: UserRole | null | undefined): boolean {
   return role === "admin" || role === "teacher";
+}
+
+/** Returns `true` if the user can access gated student content. */
+export function canAccessStudentContent(role: UserRole | null | undefined): boolean {
+  return role === "paid-student";
 }

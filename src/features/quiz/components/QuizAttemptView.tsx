@@ -38,8 +38,8 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
   const [gradeResults, setGradeResults] = useState<GradedQuestionResult[] | null>(null);
 
   const title =
-    (language === "ar" ? quiz.title_ar : language === "fr" ? quiz.title_fr : quiz.title_en) ||
-    quiz.title_en || quiz.title_fr || quiz.title_ar || t("quiz.untitled");
+    (language === "fr" ? quiz.title_fr : quiz.title_en) ||
+    quiz.title_en || quiz.title_fr || t("quiz.untitled");
 
   const currentQuestion = questions[currentIdx];
 
@@ -49,17 +49,15 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
   }, [gradeResults]);
 
   const getStatement = (q: PublicQuestionRow) => {
-    if (language === "ar" && q.statement_ar) return q.statement_ar;
     if (language === "fr" && q.statement_fr) return q.statement_fr;
-    return q.statement_en ?? q.statement_fr ?? q.statement_ar ?? "";
+    return q.statement_en ?? q.statement_fr ?? "";
   };
 
   const getExplanation = (q: PublicQuestionRow) => {
     const graded = gradeByQuestionId.get(q.id);
     if (!graded) return null;
-    if (language === "ar" && graded.explanation_ar) return graded.explanation_ar;
     if (language === "fr" && graded.explanation_fr) return graded.explanation_fr;
-    return graded.explanation_en ?? graded.explanation_fr ?? graded.explanation_ar ?? null;
+    return graded.explanation_en ?? graded.explanation_fr ?? null;
   };
 
   const getOptions = (q: PublicQuestionRow): QuestionOption[] => {

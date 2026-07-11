@@ -27,7 +27,6 @@ export async function checkActionRateLimit(
 export const RATE_LIMITS = {
   "auth-login": { limit: 5, window: 300 },       // 5 per 5 min
   "auth-signup": { limit: 3, window: 3600 },      // 3 per hour
-  "homework-submit": { limit: 10, window: 3600 },  // 10 per hour
   "quiz-attempt": { limit: 20, window: 3600 },     // 20 per hour
   "user-role-change": { limit: 5, window: 300 },    // 5 per 5 min
 } as const;

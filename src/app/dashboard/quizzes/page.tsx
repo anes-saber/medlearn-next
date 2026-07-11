@@ -37,8 +37,8 @@ export default async function StudentQuizzesPage() {
             <Card className="card-hover border-[#4a4a4a] transition-all h-full flex flex-col cursor-pointer"
               style={{ background: "hsl(220,14%,10%)" }}>
               <CardHeader className="pb-2">
-                <CardTitle className="font-heading text-lg line-clamp-1" style={{ color: "#2D8659" }}>
-                  {quiz.title_en || quiz.title_fr || quiz.title_ar || "Untitled Quiz"}
+                <CardTitle className="font-heading text-lg line-clamp-1" style={{ color: "var(--ds-teal)" }}>
+                  {quiz.title_en || quiz.title_fr || "Untitled Quiz"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-between">
@@ -46,11 +46,16 @@ export default async function StudentQuizzesPage() {
                   <p className="text-xs mb-1" style={{ color: "hsl(215,15%,50%)" }}>
                     {quiz.majors?.name} &rsaquo; {quiz.modules?.name}
                   </p>
-                  <p className="text-sm" style={{ color: "hsl(215,15%,65%)" }}>
+                  {(quiz.description_en || quiz.description_fr) && (
+                    <p className="text-xs mt-1 line-clamp-2" style={{ color: "hsl(215,15%,55%)" }}>
+                      {quiz.description_en || quiz.description_fr}
+                    </p>
+                  )}
+                  <p className="text-sm mt-1" style={{ color: "hsl(215,15%,65%)" }}>
                     Mode: {(quiz.rules_json as { mode?: string })?.mode === "exam" ? "Exam (Strict)" : "Practice"}
                   </p>
                 </div>
-                <div className="mt-4 flex items-center text-sm font-medium" style={{ color: "#2D8659" }}>
+                <div className="mt-4 flex items-center text-sm font-medium" style={{ color: "var(--ds-teal)" }}>
                   Take Quiz <ChevronRight className="h-4 w-4 ml-1" />
                 </div>
               </CardContent>

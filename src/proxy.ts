@@ -23,7 +23,7 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
-const AUTH_ROUTES = ["/dashboard", "/teacher", "/admin", "/login", "/signup"];
+const AUTH_ROUTES = ["/dashboard", "/admin", "/login", "/signup"];
 
 function needsAuth(pathname: string) {
   return AUTH_ROUTES.some((route) => pathname.startsWith(route));
@@ -94,26 +94,7 @@ export default async function proxy(request: NextRequest) {
       return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
-    if (role !== "student") {
-      if (role === "teacher" || role === "admin") {
-        const teacherDashboardUrl = request.nextUrl.clone();
-        teacherDashboardUrl.pathname = "/teacher";
-        return applySecurityHeaders(NextResponse.redirect(teacherDashboardUrl));
-      }
-      const homeUrl = request.nextUrl.clone();
-      homeUrl.pathname = "/";
-      return applySecurityHeaders(NextResponse.redirect(homeUrl));
-    }
-  }
-
-  if (currentPath.startsWith("/teacher")) {
-    if (!user) {
-      const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = "/login";
-      return applySecurityHeaders(NextResponse.redirect(loginUrl));
-    }
-
-    if (role !== "teacher" && role !== "admin") {
+    if (role !== "paid-student") {
       const homeUrl = request.nextUrl.clone();
       homeUrl.pathname = "/";
       return applySecurityHeaders(NextResponse.redirect(homeUrl));

@@ -34,7 +34,6 @@ export default function LoginForm() {
       return;
     }
 
-    // Now safely fetch the browser client to verify the user's role
     const { getBrowserSupabaseClient } = await import("@/lib/supabase/browser");
     const supabase = getBrowserSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -59,17 +58,16 @@ export default function LoginForm() {
       router.push("/admin");
       router.refresh();
       return;
-    } else if (profile && profile.role === "teacher") {
-      router.push("/teacher");
+    } else if (profile && profile.role === "paid-student") {
+      router.push("/dashboard");
       router.refresh();
       return;
-    } else if (profile && profile.role === "student") {
-      router.push("/dashboard");
+    } else if (profile && profile.role === "unpaid-student") {
+      router.push("/payment-pending");
       router.refresh();
       return;
     }
 
-    // Fallback for users without a recognized role profile
     router.push("/");
     router.refresh();
   }
@@ -77,17 +75,15 @@ export default function LoginForm() {
   return (
     <div className="flex min-h-[calc(100vh-140px)] flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-background">
       <div className="w-full max-w-sm flex flex-col items-center">
-        {/* Sleek Vertical Container */}
-        <div className="w-full rounded-xl border border-gray-800 bg-[#1A1A1A]/80 backdrop-blur-md p-8 shadow-2xl relative overflow-hidden">
+        <div className="w-full rounded-xl border border-border bg-card/80 backdrop-blur-md p-8 shadow-lg relative overflow-hidden">
           
-          {/* Subtle Security Accent Line */}
-          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
+          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
 
           <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-4 rounded-full bg-emerald-950/50 p-3 ring-1 ring-emerald-500/20">
-              <Shield className="h-6 w-6 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" aria-hidden />
+            <div className="mb-4 rounded-full bg-primary/10 p-3 ring-1 ring-primary/20">
+              <Shield className="h-6 w-6 text-primary" aria-hidden />
             </div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-white">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
               {t("login.title")}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -97,7 +93,7 @@ export default function LoginForm() {
 
           <form onSubmit={(e) => void onSubmit(e)} className="space-y-5">
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <label htmlFor="email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("login.email")}
               </label>
               <Input
@@ -107,12 +103,12 @@ export default function LoginForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border-gray-700 bg-black/40 text-white placeholder-gray-500 focus:border-emerald-500/50 focus:ring-emerald-500/50 transition-colors"
+                className="w-full border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary/50 focus:ring-primary/50 transition-colors"
                 placeholder="admin@medlearn.edu"
               />
             </div>
             <div>
-              <label htmlFor="password" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <label htmlFor="password" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("login.password")}
               </label>
               <Input
@@ -122,21 +118,21 @@ export default function LoginForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border-gray-700 bg-black/40 text-white placeholder-gray-500 focus:border-emerald-500/50 focus:ring-emerald-500/50 transition-colors"
+                className="w-full border-border bg-background text-foreground placeholder-muted-foreground focus:border-primary/50 focus:ring-primary/50 transition-colors"
                 placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <div className="rounded-md border border-red-900/50 bg-red-950/20 p-3 text-center">
-                <p className="text-sm font-medium text-red-500">{error}</p>
+              <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-center">
+                <p className="text-sm font-medium text-destructive">{error}</p>
               </div>
             )}
 
             <div className="pt-2">
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-semibold shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] hover:from-emerald-400 hover:to-emerald-600 transition-all duration-200" 
+                className="w-full font-semibold shadow-md hover:shadow-lg transition-all duration-200" 
                 disabled={pending}
               >
                 {pending ? "Authenticating..." : t("login.submit")}
@@ -148,9 +144,8 @@ export default function LoginForm() {
              <div>
                <button 
                   type="button"
-                  className="text-xs font-medium text-gray-500 transition-colors hover:text-emerald-400"
+                  className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
                   onClick={() => {
-                    /* Optional forgot password workflow */
                     alert("Please contact the system administrator to reset your password.");
                   }}
                 >
@@ -158,15 +153,14 @@ export default function LoginForm() {
                </button>
              </div>
              <div>
-               <Link href="/signup" className="text-xs font-medium text-emerald-400 hover:text-emerald-300">
+               <Link href="/signup" className="text-xs font-medium text-primary hover:text-primary/80">
                  Don&apos;t have an account? Sign Up
                </Link>
              </div>
           </div>
         </div>
         
-        {/* Extra minimal footer below container */}
-        <p className="mt-8 text-xs text-gray-600">
+        <p className="mt-8 text-xs text-muted-foreground/60">
            Protected securely by MEDlearn.
         </p>
       </div>

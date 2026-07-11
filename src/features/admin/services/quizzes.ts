@@ -21,7 +21,8 @@ export interface QuizPayload {
   module_id: string;
   title_en: string;
   title_fr: string;
-  title_ar: string;
+  description_en: string;
+  description_fr: string;
   rules: QuizRules;
   published: boolean;
   question_ids: string[]; // ordered list
@@ -69,7 +70,10 @@ export async function createQuiz(payload: QuizPayload): Promise<string> {
     module_id: payload.module_id,
     title_en: payload.title_en.trim() || null,
     title_fr: payload.title_fr.trim() || null,
-    title_ar: payload.title_ar.trim() || null,
+
+    description_en: payload.description_en.trim() || null,
+    description_fr: payload.description_fr.trim() || null,
+
     rules_json: payload.rules as unknown as Json,
     published: payload.published,
   }).select("id").single();
@@ -85,7 +89,10 @@ export async function updateQuiz(id: string, payload: QuizPayload) {
     module_id: payload.module_id,
     title_en: payload.title_en.trim() || null,
     title_fr: payload.title_fr.trim() || null,
-    title_ar: payload.title_ar.trim() || null,
+
+    description_en: payload.description_en.trim() || null,
+    description_fr: payload.description_fr.trim() || null,
+
     rules_json: payload.rules as unknown as Json,
     published: payload.published,
   }).eq("id", id);

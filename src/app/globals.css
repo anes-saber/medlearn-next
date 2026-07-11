@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DESIGN TOKENS
@@ -60,49 +61,120 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 @layer base {
-  :root {
-    --background: 212 16% 8%;     /* #0f1419 dark BG */
-    --foreground: 0 0% 100%;      /* #FFFFFF light text */
+  :root,
+  .dark {
+    --background: 220 18% 10%;     /* #14181f dark slate */
+    --foreground: 210 20% 90%;     /* warm white text */
 
-    --card: 220 14% 10%;
-    --card-foreground: 0 0% 100%;
+    --card: 220 16% 13%;
+    --card-foreground: 210 20% 90%;
 
-    --popover: 220 14% 10%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 220 16% 13%;
+    --popover-foreground: 210 20% 90%;
 
-    --primary: 151 50% 35%;        /* #2D8659 Clinical Green */
+    --primary: 191 60% 38%;        /* #277A8A Deep Teal */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 151 50% 26%;  /* #1F5E42 */
+    --primary-hover: 191 60% 28%;
 
-    --secondary: 220 5% 29%;       /* #4a4a4a Gray Button */
+    --secondary: 215 14% 28%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 12% 14%;
-    --muted-foreground: 215 15% 65%;
+    --muted: 220 14% 16%;
+    --muted-foreground: 215 18% 58%;
 
-    --accent: 211 53% 31%;         /* #1B4965 Primary Blue */
+    --accent: 213 45% 35%;         /* #315F8C Navy Blue */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 69% 51%;      /* #D63031 Delete Red */
+    --destructive: 0 69% 51%;
     --destructive-foreground: 0 0% 100%;
-    --destructive-hover: 0 69% 42%; /* #B8281D */
+    --destructive-hover: 0 69% 42%;
 
-    --border: 220 5% 29%;          /* #4a4a4a Gray Border */
-    --input: 220 5% 29%;
-    --ring: 151 50% 35%;           /* #2D8659 */
+    --border: 220 10% 22%;
+    --input: 220 10% 22%;
+    --ring: 191 60% 38%;
 
-    --radius: 0.5rem;
+    --radius: 0.375rem;
 
     /* Named design tokens for use in inline styles */
-    --ds-green: #2D8659;
-    --ds-green-hover: #1F5E42;
-    --ds-blue: #1B4965;
+    --ds-teal: #277A8A;
+    --ds-teal-hover: #1C5E6B;
+    --ds-navy: #315F8C;
     --ds-red: #D63031;
     --ds-red-hover: #B8281D;
     --ds-amber: #F39C12;
-    --ds-border: #4a4a4a;
-    --ds-bg: #0f1419;
+    --ds-border: #32363d;
+    --ds-bg: #14181f;
+
+    --hero-bg: radial-gradient(ellipse 80% 60% at 50% -10%, hsla(191,60%,15%,0.5), transparent), hsl(220,18%,10%);
+
+    /* Light mode specific overrides */
+    --ds-primary-glow: hsla(191, 60%, 38%, 0.35);
+    --ds-primary-subtle: hsla(191, 60%, 38%, 0.08);
+    --ds-primary-border: hsla(191, 60%, 38%, 0.2);
+    --ds-card-border: hsl(220 10% 22%);
   }
+
+  .light {
+    --background: 210 25% 97%;     /* #F4F6F9 warm off-white */
+    --foreground: 218 22% 16%;     /* warm dark charcoal */
+
+    --card: 0 0% 100%;
+    --card-foreground: 218 22% 16%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 218 22% 16%;
+
+    --primary: 191 60% 33%;        /* Deep Teal */
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 191 60% 25%;
+
+    --secondary: 215 18% 88%;
+    --secondary-foreground: 218 22% 16%;
+
+    --muted: 210 18% 92%;
+    --muted-foreground: 215 14% 48%;
+
+    --accent: 213 45% 38%;         /* Navy */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 69% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-hover: 0 69% 42%;
+
+    --border: 215 15% 82%;
+    --input: 215 15% 82%;
+    --ring: 191 60% 33%;
+
+    --radius: 0.375rem;
+
+    /* Named design tokens */
+    --ds-teal: #21626F;
+    --ds-teal-hover: #17454F;
+    --ds-navy: #35628A;
+    --ds-red: #D63031;
+    --ds-red-hover: #B8281D;
+    --ds-amber: #E09E1A;
+    --ds-border: #cbd0d8;
+    --ds-bg: #F4F6F9;
+
+    --hero-bg: radial-gradient(ellipse 80% 60% at 50% -10%, hsla(191,60%,75%,0.3), transparent), hsl(210,25%,97%);
+
+    /* Light mode specific overrides */
+    --ds-primary-glow: hsla(191, 60%, 33%, 0.25);
+    --ds-primary-subtle: hsla(191, 60%, 33%, 0.08);
+    --ds-primary-border: hsla(191, 60%, 33%, 0.2);
+    --ds-card-border: hsl(215 15% 82%);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SMOOTH THEME TRANSITIONS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -117,6 +189,11 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     min-height: 100vh;
+    line-height: 1.75;
+  }
+  
+  p {
+    max-width: 68ch;
   }
 
   /* Headings default to Lora serif */
@@ -140,10 +217,46 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .glass {
-  background: hsla(220, 14%, 10%, 0.6);
+  background: hsla(220, 16%, 13%, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid hsla(220, 12%, 17%, 0.5);
+  border-bottom: 1px solid hsla(220, 10%, 22%, 0.5);
+}
+
+.light .glass {
+  background: hsla(0, 0%, 100%, 0.7);
+  border-bottom: 1px solid hsla(215, 15%, 82%, 0.8);
+}
+
+.card-clinical {
+  background: var(--color-card);
+  border: 1px solid var(--ds-card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.02);
+}
+
+.dark .card-clinical {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary-clinical {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+.btn-primary-clinical:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.hero-waveform {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='40' viewBox='0 0 100 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 L20 20 L25 10 L30 35 L35 5 L40 25 L45 20 L100 20' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: 100px 40px;
+  background-repeat: repeat;
+  opacity: 0.04;
 }
 
 .scan-hover {
@@ -160,14 +273,14 @@
 .table-row-hover tbody tr:hover {
   background-color: hsla(220, 12%, 14%, 0.5);
 }
+.light .table-row-hover tbody tr:hover {
+  background-color: hsla(220, 12%, 90%, 0.6);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    ADMIN PAGES — Consistent Styling
    ───────────────────────────────────────────────────────────────────────────── */
 
-.admin-page {
-  /* Typography */
-}
 .admin-page h1,
 .admin-page h2 {
   font-family: var(--font-display), Georgia, serif;
@@ -205,12 +318,15 @@
   border-width: 1px;
   padding: 12px 14px;
   transition: border-color 0.15s, box-shadow 0.15s;
+  border-radius: var(--radius);
+  background: var(--color-background);
+  color: var(--color-foreground);
 }
 
 .admin-page select:focus {
-  border-color: var(--ds-green);
+  border-color: var(--ds-teal);
   border-width: 2px;
-  box-shadow: 0 0 0 3px rgba(45, 134, 89, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-primary-glow);
   outline: none;
 }
 
@@ -218,12 +334,14 @@
 .admin-page textarea {
   border-color: var(--ds-border);
   transition: border-color 0.15s, box-shadow 0.15s;
+  background: var(--color-background);
+  color: var(--color-foreground);
 }
 
 .admin-page textarea:focus {
-  border-color: var(--ds-green);
+  border-color: var(--ds-teal);
   border-width: 2px;
-  box-shadow: 0 0 0 3px rgba(45, 134, 89, 0.1);
+  box-shadow: 0 0 0 3px var(--ds-primary-glow);
   outline: none;
 }
 
@@ -243,8 +361,27 @@
 }
 .student-page .card-hover:hover {
   transform: translateY(-2px);
-  border-color: var(--ds-green);
-  box-shadow: 0 4px 24px rgba(45, 134, 89, 0.08);
+  border-color: var(--ds-teal);
+  box-shadow: 0 4px 24px rgba(39, 122, 138, 0.1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   QUIZ / EXAM STYLES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Radio-like button for quiz options */
+.quiz-option {
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-card-foreground);
+}
+.quiz-option:hover {
+  border-color: var(--color-primary);
+  background: var(--color-muted);
+}
+.quiz-option.selected {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, hsl(var(--primary)) 10%, var(--color-card));
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import type { UserRole } from "@/lib/rbac";
 
-const VALID_ROLES: UserRole[] = ["admin", "teacher", "student"];
+const VALID_ROLES: UserRole[] = ["admin", "paid-student", "unpaid-student"];
 
 export async function setRoleCookie(role: string) {
   // Validate role before setting cookie

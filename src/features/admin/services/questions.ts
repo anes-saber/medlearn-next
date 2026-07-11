@@ -17,12 +17,12 @@ export interface QuestionPayload {
   type: QuestionType;
   statement_en: string;
   statement_fr: string;
-  statement_ar: string;
+  description_en: string;
+  description_fr: string;
   options: QuestionOption[];
   correct_answer: string | string[]; // single id for SCQ/TF, array for MCQ
   explanation_en: string;
   explanation_fr: string;
-  explanation_ar: string;
   difficulty: Difficulty | null;
   tags: string[];
   published: boolean;
@@ -46,12 +46,15 @@ export async function createQuestion(payload: QuestionPayload) {
     type: payload.type,
     statement_en: payload.statement_en.trim() || null,
     statement_fr: payload.statement_fr.trim() || null,
-    statement_ar: payload.statement_ar.trim() || null,
+
+    description_en: payload.description_en.trim() || null,
+    description_fr: payload.description_fr.trim() || null,
+
     options_json: payload.options as unknown as Json,
     correct_answer: payload.correct_answer as unknown as Json,
     explanation_en: payload.explanation_en.trim() || null,
     explanation_fr: payload.explanation_fr.trim() || null,
-    explanation_ar: payload.explanation_ar.trim() || null,
+
     difficulty: payload.difficulty,
     tags: payload.tags,
     published: payload.published,
@@ -67,12 +70,15 @@ export async function updateQuestion(id: string, payload: QuestionPayload) {
     type: payload.type,
     statement_en: payload.statement_en.trim() || null,
     statement_fr: payload.statement_fr.trim() || null,
-    statement_ar: payload.statement_ar.trim() || null,
+
+    description_en: payload.description_en.trim() || null,
+    description_fr: payload.description_fr.trim() || null,
+
     options_json: payload.options as unknown as Json,
     correct_answer: payload.correct_answer as unknown as Json,
     explanation_en: payload.explanation_en.trim() || null,
     explanation_fr: payload.explanation_fr.trim() || null,
-    explanation_ar: payload.explanation_ar.trim() || null,
+
     difficulty: payload.difficulty,
     tags: payload.tags,
     published: payload.published,

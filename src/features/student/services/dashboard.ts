@@ -9,7 +9,6 @@ export async function getStudentDashboardData(supabase: SupabaseClient<Database>
     profileRes,
     majorsRes,
     modulesRes,
-    allHomeworkRes,
     quizzesRes,
   ] = await Promise.all([
     supabase
@@ -31,14 +30,8 @@ export async function getStudentDashboardData(supabase: SupabaseClient<Database>
       .from("modules")
       .select("id, name, major_id"),
     supabase
-      .from("homeworks")
-      .select("id, title_en, title_fr, title_ar, due_at, major_id, module_id")
-      .eq("published", true)
-      .order("due_at", { ascending: true })
-      .limit(10),
-    supabase
       .from("quizzes")
-      .select("id, major_id, module_id, title_en, title_fr, title_ar")
+      .select("id, major_id, module_id, title_en, title_fr")
       .eq("published", true),
   ]);
 
@@ -46,7 +39,6 @@ export async function getStudentDashboardData(supabase: SupabaseClient<Database>
   const profile = profileRes.data;
   const majors = majorsRes.data ?? [];
   const modules = modulesRes.data ?? [];
-  const allHomework = allHomeworkRes.data ?? [];
   const quizzes = quizzesRes.data ?? [];
 
   const avgScore = recentAttempts.length > 0
@@ -69,12 +61,6 @@ export async function getStudentDashboardData(supabase: SupabaseClient<Database>
     ? Math.round((answeredQuestions / totalQuizQuestions) * 100)
     : 0;
 
-  const homeworksWithMods = allHomework.map(hw => {
-    const mod = modules.find(m => m.id === hw.module_id);
-    const major = majors.find(m => m.id === (mod?.major_id ?? hw.major_id));
-    return { ...hw, moduleName: mod?.name ?? null, majorName: major?.name ?? null };
-  });
-
   const modulesWithMajor = modules.map(mod => {
     const major = majors.find(m => m.id === mod.major_id);
     return { ...mod, majorName: major?.name ?? null };
@@ -90,9 +76,7 @@ export async function getStudentDashboardData(supabase: SupabaseClient<Database>
     retentionScore,
     majors,
     modules: modulesWithMajor,
-    upcomingHomework: homeworksWithMods,
     totalQuizzes: quizzes.length,
-    totalHomework: allHomework.length,
     totalResources: 0,
   };
 }

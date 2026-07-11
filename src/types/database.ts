@@ -72,15 +72,15 @@ export type Database = {
           id: string
           email: string
           full_name: string | null
-          role: string
+          role: "admin" | "teacher" | "paid-student" | "unpaid-student"
           created_at: string
           updated_at: string
         }
-        Insert: {
+          Insert: {
           id: string
           email: string
           full_name?: string | null
-          role?: string
+          role?: "admin" | "teacher" | "paid-student" | "unpaid-student"
           created_at?: string
           updated_at?: string
         }
@@ -88,7 +88,7 @@ export type Database = {
           id?: string
           email?: string
           full_name?: string | null
-          role?: string
+          role?: "admin" | "teacher" | "paid-student" | "unpaid-student"
           created_at?: string
           updated_at?: string
         }
@@ -217,6 +217,9 @@ export type Database = {
           statement_en: string | null
           statement_fr: string | null
           statement_ar: string | null
+          description_en: string | null
+          description_fr: string | null
+          description_ar: string | null
           options_json: Json
           correct_answer: Json
           explanation_en: string | null
@@ -236,6 +239,9 @@ export type Database = {
           statement_en?: string | null
           statement_fr?: string | null
           statement_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          description_ar?: string | null
           options_json?: Json
           correct_answer: Json
           explanation_en?: string | null
@@ -255,6 +261,9 @@ export type Database = {
           statement_en?: string | null
           statement_fr?: string | null
           statement_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          description_ar?: string | null
           options_json?: Json
           correct_answer?: Json
           explanation_en?: string | null
@@ -291,6 +300,9 @@ export type Database = {
           title_en: string | null
           title_fr: string | null
           title_ar: string | null
+          description_en: string | null
+          description_fr: string | null
+          description_ar: string | null
           rules_json: Json
           published: boolean
           created_by: string | null
@@ -303,6 +315,9 @@ export type Database = {
           title_en?: string | null
           title_fr?: string | null
           title_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          description_ar?: string | null
           rules_json?: Json
           published?: boolean
           created_by?: string | null
@@ -315,6 +330,9 @@ export type Database = {
           title_en?: string | null
           title_fr?: string | null
           title_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          description_ar?: string | null
           rules_json?: Json
           published?: boolean
           created_by?: string | null
@@ -370,119 +388,7 @@ export type Database = {
           },
         ]
       }
-      homeworks: {
-        Row: {
-          id: string
-          major_id: string
-          module_id: string
-          title_en: string | null
-          title_fr: string | null
-          title_ar: string | null
-          description_en: string | null
-          description_fr: string | null
-          description_ar: string | null
-          due_at: string | null
-          attachment_urls: string[]
-          rules_json: Json
-          published: boolean
-          created_by: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          major_id: string
-          module_id: string
-          title_en?: string | null
-          title_fr?: string | null
-          title_ar?: string | null
-          description_en?: string | null
-          description_fr?: string | null
-          description_ar?: string | null
-          due_at?: string | null
-          attachment_urls?: string[]
-          rules_json?: Json
-          published?: boolean
-          created_by?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          major_id?: string
-          module_id?: string
-          title_en?: string | null
-          title_fr?: string | null
-          title_ar?: string | null
-          description_en?: string | null
-          description_fr?: string | null
-          description_ar?: string | null
-          due_at?: string | null
-          attachment_urls?: string[]
-          rules_json?: Json
-          published?: boolean
-          created_by?: string | null
-          created_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "homeworks_major_id_fkey"
-            columns: ["major_id"]
-            isOneToOne: false
-            referencedRelation: "majors"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "homeworks_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "modules"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      homework_submissions: {
-        Row: {
-          id: string
-          homework_id: string
-          user_id: string | null
-          submitter_name: string | null
-          submitter_email: string | null
-          submission_payload: Json
-          grade: string | null
-          feedback: string | null
-          submitted_at: string
-        }
-        Insert: {
-          id?: string
-          homework_id: string
-          user_id?: string | null
-          submitter_name?: string | null
-          submitter_email?: string | null
-          submission_payload?: Json
-          grade?: string | null
-          feedback?: string | null
-          submitted_at?: string
-        }
-        Update: {
-          id?: string
-          homework_id?: string
-          user_id?: string | null
-          submitter_name?: string | null
-          submitter_email?: string | null
-          submission_payload?: Json
-          grade?: string | null
-          feedback?: string | null
-          submitted_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "homework_submissions_homework_id_fkey"
-            columns: ["homework_id"]
-            isOneToOne: false
-            referencedRelation: "homeworks"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+
     }
     Views: {
       [_ in never]: never

@@ -29,7 +29,8 @@ function emptyPayload(): QuizPayload {
     module_id: "",
     title_en: "",
     title_fr: "",
-    title_ar: "",
+    description_en: "",
+    description_fr: "",
     rules: { ...DEFAULT_RULES },
     published: false,
     question_ids: [],
@@ -84,7 +85,7 @@ export default function QuizBuilderView() {
     if (payload.question_ids.includes(q.id)) return false;
     if (qSearch) {
       const s = qSearch.toLowerCase();
-      const stmt = [q.statement_en, q.statement_fr, q.statement_ar].filter(Boolean).join(" ").toLowerCase();
+      const stmt = [q.statement_en, q.statement_fr].filter(Boolean).join(" ").toLowerCase();
       if (!stmt.includes(s)) return false;
     }
     return true;
@@ -106,7 +107,8 @@ export default function QuizBuilderView() {
         module_id: quiz.module_id,
         title_en: quiz.title_en ?? "",
         title_fr: quiz.title_fr ?? "",
-        title_ar: quiz.title_ar ?? "",
+        description_en: quiz.description_en ?? "",
+        description_fr: quiz.description_fr ?? "",
         rules,
         published: quiz.published,
         question_ids,
@@ -123,7 +125,7 @@ export default function QuizBuilderView() {
 
   const handleSave = useCallback(async () => {
     if (!payload.major_id || !payload.module_id) { setError("Select a major and module."); return; }
-    if (!payload.title_en && !payload.title_fr && !payload.title_ar) { setError("Enter a title in at least one language."); return; }
+    if (!payload.title_en && !payload.title_fr) { setError("Enter a title in at least one language."); return; }
     if (payload.question_ids.length === 0) { setError("Add at least one question."); return; }
     setBusy(true);
     setError("");
@@ -219,12 +221,24 @@ export default function QuizBuilderView() {
           </div>
 
           {/* Titles */}
-          <div className="grid gap-3 sm:grid-cols-3">
-            {(["en", "fr", "ar"] as const).map(lang => (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(["en", "fr"] as const).map(lang => (
               <div key={lang}>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Title ({lang.toUpperCase()})</label>
-                <Input dir={lang === "ar" ? "rtl" : "ltr"} value={(payload as unknown as Record<string, unknown>)[`title_${lang}`] as string}
+                <Input value={(payload as unknown as Record<string, unknown>)[`title_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`title_${lang}`]: e.target.value }))} />
+              </div>
+            ))}
+          </div>
+
+          {/* Description */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(["en", "fr"] as const).map(lang => (
+              <div key={lang}>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Description ({lang.toUpperCase()})</label>
+                <textarea className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
+                  value={(payload as unknown as Record<string, unknown>)[`description_${lang}`] as string}
+                  onChange={e => setPayload(p => ({ ...p, [`description_${lang}`]: e.target.value }))} />
               </div>
             ))}
           </div>
@@ -300,7 +314,7 @@ export default function QuizBuilderView() {
                   <button key={q.id} type="button" onClick={() => addQuestion(q.id)}
                     className="w-full text-left rounded-md border border-transparent hover:border-primary/40 hover:bg-accent px-3 py-2 text-xs transition-colors">
                     <span className="font-mono text-[10px] text-muted-foreground me-1.5">{q.type.toUpperCase()}</span>
-                    {q.statement_en || q.statement_fr || q.statement_ar || "—"}
+                    {q.statement_en || q.statement_fr || "—"}
                   </button>
                 ))}
               </div>
@@ -313,7 +327,7 @@ export default function QuizBuilderView() {
                 ) : selectedQuestions.map((q, idx) => (
                   <div key={q.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
                     <span className="text-xs text-muted-foreground w-5 shrink-0">{idx + 1}.</span>
-                    <p className="flex-1 text-xs line-clamp-1">{q.statement_en || q.statement_fr || q.statement_ar || "—"}</p>
+                    <p className="flex-1 text-xs line-clamp-1">{q.statement_en || q.statement_fr || "—"}</p>
                     <div className="flex gap-1">
                       {idx > 0 && <button type="button" onClick={() => moveQuestion(idx, idx - 1)} className="text-muted-foreground hover:text-foreground">↑</button>}
                       {idx < selectedQuestions.length - 1 && <button type="button" onClick={() => moveQuestion(idx, idx + 1)} className="text-muted-foreground hover:text-foreground">↓</button>}
@@ -347,7 +361,7 @@ export default function QuizBuilderView() {
               <Button size="sm" className="mt-4" onClick={startNew}><Plus className="h-4 w-4 me-1.5" />Create Quiz</Button>
             </div>
           ) : quizzes.map(quiz => {
-            const title = quiz.title_en || quiz.title_fr || quiz.title_ar || "Untitled";
+            const title = quiz.title_en || quiz.title_fr || "Untitled";
             const majorName = majors.find(m => m.id === quiz.major_id)?.name ?? "—";
             const moduleName = modules.find(m => m.id === quiz.module_id)?.name ?? "—";
             const rules = quiz.rules_json as unknown as QuizRules;
@@ -356,7 +370,7 @@ export default function QuizBuilderView() {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      rules?.mode === "exam" ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-emerald-700/15 text-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300"
+                      rules?.mode === "exam" ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-teal-700/15 text-teal-400 dark:bg-teal-900/30 dark:text-teal-300"
                     }`}>{rules?.mode ?? "practice"}</span>
                     {!quiz.published && <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Draft</span>}
                     {rules?.timer_minutes && <span className="text-xs text-muted-foreground">⏱ {rules.timer_minutes}m</span>}

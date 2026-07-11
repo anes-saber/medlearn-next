@@ -19,8 +19,8 @@ export default async function StudentLayout({ children }: { children: React.Reac
     .eq("id", user.id)
     .single();
 
-  if (!profile || profile.role !== "student") {
-    redirect("/");
+  if (!profile || profile.role !== "paid-student") {
+    redirect("/payment-pending");
   }
 
   return <StudentShell>{children}</StudentShell>;

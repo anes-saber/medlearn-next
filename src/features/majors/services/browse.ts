@@ -8,7 +8,7 @@ export type MajorRow = Database["public"]["Tables"]["majors"]["Row"];
 export type ModuleRow = Database["public"]["Tables"]["modules"]["Row"];
 export type ResourceRow = Database["public"]["Tables"]["resources"]["Row"];
 export type QuizRow = Database["public"]["Tables"]["quizzes"]["Row"];
-export type HomeworkRow = Database["public"]["Tables"]["homeworks"]["Row"];
+
 
 export const getMajorsOrdered = unstable_cache(
   async (): Promise<MajorRow[]> => {
@@ -165,22 +165,4 @@ export async function getPublishedQuizzesForModule(
   return data ?? [];
 }
 
-export async function getPublishedHomeworksForModule(
-  majorId: string,
-  moduleId: string,
-): Promise<HomeworkRow[]> {
-  const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("homeworks")
-    .select("*")
-    .eq("major_id", majorId)
-    .eq("module_id", moduleId)
-    .eq("published", true)
-    .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("getPublishedHomeworksForModule", error.message);
-    return [];
-  }
-  return data ?? [];
-}

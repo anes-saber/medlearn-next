@@ -40,12 +40,12 @@ function emptyPayload(): QuestionPayload {
     type: "scq",
     statement_en: "",
     statement_fr: "",
-    statement_ar: "",
+    description_en: "",
+    description_fr: "",
     options: [0, 1, 2, 3].map(i => newOption(i)),
     correct_answer: "",
     explanation_en: "",
     explanation_fr: "",
-    explanation_ar: "",
     difficulty: null,
     tags: [],
     published: false,
@@ -103,7 +103,7 @@ export default function QuestionBankView() {
     if (filterType && q.type !== filterType) return false;
     if (search) {
       const s = search.toLowerCase();
-      const stmt = [q.statement_en, q.statement_fr, q.statement_ar].filter(Boolean).join(" ").toLowerCase();
+      const stmt = [q.statement_en, q.statement_fr].filter(Boolean).join(" ").toLowerCase();
       if (!stmt.includes(s)) return false;
     }
     return true;
@@ -126,12 +126,12 @@ export default function QuestionBankView() {
       type: q.type,
       statement_en: q.statement_en ?? "",
       statement_fr: q.statement_fr ?? "",
-      statement_ar: q.statement_ar ?? "",
+      description_en: q.description_en ?? "",
+      description_fr: q.description_fr ?? "",
       options,
       correct_answer: Array.isArray(ca) ? (ca as string[]) : (ca as string),
       explanation_en: q.explanation_en ?? "",
       explanation_fr: q.explanation_fr ?? "",
-      explanation_ar: q.explanation_ar ?? "",
       difficulty: q.difficulty ?? null,
       tags: q.tags ?? [],
       published: q.published,
@@ -146,7 +146,7 @@ export default function QuestionBankView() {
 
   const handleSave = useCallback(async () => {
     if (!payload.major_id || !payload.module_id) { setError("Select a major and module."); return; }
-    const stmtFilled = payload.statement_en || payload.statement_fr || payload.statement_ar;
+    const stmtFilled = payload.statement_en || payload.statement_fr;
     if (!stmtFilled) { setError("Enter the question statement in at least one language."); return; }
     if (payload.type !== "truefalse" && payload.options.some(o => !o.text.trim())) {
       setError("Fill in all answer options (or remove extras)."); return;
@@ -275,17 +275,32 @@ export default function QuestionBankView() {
           </div>
 
           {/* Statement */}
-          <div className="grid gap-3 sm:grid-cols-3">
-            {(["en", "fr", "ar"] as const).map(lang => (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(["en", "fr"] as const).map(lang => (
               <div key={lang}>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">
                   {t("admin.questions.statement")} ({lang.toUpperCase()})
                 </label>
                 <textarea
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
-                  dir={lang === "ar" ? "rtl" : "ltr"}
                   value={(payload as unknown as Record<string, unknown>)[`statement_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`statement_${lang}`]: e.target.value }))}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Description */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(["en", "fr"] as const).map(lang => (
+              <div key={lang}>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                  Description ({lang.toUpperCase()})
+                </label>
+                <textarea
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
+                  value={(payload as unknown as Record<string, unknown>)[`description_${lang}`] as string}
+                  onChange={e => setPayload(p => ({ ...p, [`description_${lang}`]: e.target.value }))}
                 />
               </div>
             ))}
@@ -353,15 +368,14 @@ export default function QuestionBankView() {
           )}
 
           {/* Explanation */}
-          <div className="grid gap-3 sm:grid-cols-3">
-            {(["en", "fr", "ar"] as const).map(lang => (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(["en", "fr"] as const).map(lang => (
               <div key={lang}>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">
                   {t("admin.questions.explanation")} ({lang.toUpperCase()})
                 </label>
                 <textarea
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px] resize-y"
-                  dir={lang === "ar" ? "rtl" : "ltr"}
                   value={(payload as unknown as Record<string, unknown>)[`explanation_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`explanation_${lang}`]: e.target.value }))}
                 />
@@ -451,7 +465,7 @@ export default function QuestionBankView() {
               <Button size="sm" className="mt-4" onClick={startNew}><Plus className="h-4 w-4 me-1.5" />{t("admin.questions.new")}</Button>
             </div>
           ) : filtered.map(q => {
-            const stmt = q.statement_en || q.statement_fr || q.statement_ar || "—";
+            const stmt = q.statement_en || q.statement_fr || "—";
             const majorName = majors.find(m => m.id === q.major_id)?.name ?? "—";
             const moduleName = modules.find(m => m.id === q.module_id)?.name ?? "—";
             return (

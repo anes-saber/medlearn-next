@@ -5,7 +5,7 @@ import { isAdminOrTeacher, type UserRole } from "@/lib/rbac";
 import { revalidatePath } from "next/cache";
 import { checkActionRateLimit, RATE_LIMITS } from "@/lib/serverRateLimit";
 
-const VALID_ROLES: UserRole[] = ["admin", "teacher", "student"];
+const VALID_ROLES: UserRole[] = ["admin", "paid-student", "unpaid-student"];
 
 export async function updateUserRole(userId: string, newRole: UserRole) {
   const supabase = await createServerSupabaseClient();

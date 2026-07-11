@@ -24,5 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/");
   }
 
+  // Admins bypass payment check
+
   return <AdminShell>{children}</AdminShell>;
 }
