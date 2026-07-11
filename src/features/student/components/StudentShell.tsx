@@ -48,11 +48,11 @@ export default function StudentShell({ children }: { children: React.ReactNode }
               href={item.href}
               className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150 ${
                 active
-                  ? "bg-accent/20 text-accent-foreground shadow-[inset_3px_0_0] shadow-accent"
-                  : "text-muted-foreground hover:bg-muted hover:text-card-foreground"
+                  ? "bg-primary/10 text-primary shadow-[inset_3px_0_0] shadow-primary font-semibold"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
-              <item.icon className="h-4 w-4 shrink-0 transition-colors" aria-hidden />
+              <item.icon className={`h-4 w-4 shrink-0 transition-colors ${active ? "text-primary" : ""}`} aria-hidden />
               {t(item.label)}
             </Link>
           );
@@ -120,7 +120,7 @@ export default function StudentShell({ children }: { children: React.ReactNode }
       </aside>
 
       {/* ── Mobile Bottom Tab Bar ──────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t border-border bg-card overflow-x-auto"
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t border-border bg-card overflow-x-auto pb-[env(safe-area-inset-bottom)]"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         <div className="flex w-full min-w-max justify-around items-center px-2">

@@ -31,14 +31,14 @@ export default function UsersView({ profiles, currentUserId }: { profiles: Profi
   }
 
   return (
-    <div className="admin-page animate-fade-in p-6 max-w-5xl mx-auto">
+    <div className="admin-page container animate-fade-in py-10">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-accent/15">
           <Users className="h-5 w-5 text-accent-foreground" />
         </div>
         <div>
-          <h1 className="text-lg font-bold text-card-foreground">
+          <h1 className="font-heading text-2xl font-bold text-card-foreground">
             Manage Users
           </h1>
           <p className="text-sm text-muted-foreground">

@@ -132,11 +132,11 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
   if (questions.length === 0) {
     return (
       <div className="container py-20 text-center animate-fade-in">
-        <p style={{ color: "hsl(215,15%,50%)" }}>{t("quiz.no_questions")}</p>
+        <p style={{ color: "var(--color-muted-foreground)" }}>{t("quiz.no_questions")}</p>
         <Link
           href={`/majors/${majorId}/modules/${moduleId}?tab=quizzes`}
-          className="inline-flex items-center gap-2 mt-4 rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-white/5"
-          style={{ borderColor: "hsl(220,12%,22%)", color: "hsl(215,15%,60%)" }}
+          className="inline-flex items-center gap-2 mt-4 rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-muted/50"
+          style={{ borderColor: "var(--quiz-nav-border)", color: "var(--color-muted-foreground)" }}
         >
           <ChevronLeft className="h-4 w-4" />{t("quiz.back")}
         </Link>
@@ -147,14 +147,14 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
   /* ── Results screen ─────────────────────────────────────────────────────── */
   if (submitted && showResults && score) {
     const passed = rules.pass_mark != null ? score.pct >= rules.pass_mark : null;
-    const pctColor = score.pct >= 70 ? "hsl(151,100%,55%)" : score.pct >= 50 ? "hsl(45,93%,58%)" : "hsl(0,80%,65%)";
+    const pctColor = score.pct >= 70 ? "var(--quiz-correct-text)" : score.pct >= 50 ? "hsl(45,93%,58%)" : "var(--quiz-incorrect-text)";
 
     return (
       <div className="container py-12 max-w-2xl mx-auto space-y-6 animate-fade-in">
         {/* Score card */}
         <div
           className="relative overflow-hidden rounded-2xl border p-8 text-center"
-          style={{ background: "hsl(220,14%,10%)", borderColor: "hsl(220,12%,18%)" }}
+          style={{ background: "var(--color-card)", borderColor: "var(--ds-card-border)" }}
         >
           <div
             className="absolute inset-0 opacity-30 blur-3xl"
@@ -167,17 +167,17 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
             >
               <Trophy className="h-10 w-10" style={{ color: pctColor }} />
             </div>
-            <h1 className="font-heading text-2xl font-bold mb-2" style={{ color: "hsl(210,20%,95%)" }}>
+            <h1 className="font-heading text-2xl font-bold mb-2" style={{ color: "var(--color-card-foreground)" }}>
               {t("quiz.results")}
             </h1>
             <p className="text-6xl font-bold mt-2 mb-1" style={{ color: pctColor }}>
               {score.pct}%
             </p>
-            <p className="text-sm" style={{ color: "hsl(215,15%,55%)" }}>
+            <p className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
               {score.correct} / {score.total} {t("quiz.correct")}
             </p>
             {passed !== null && (
-              <p className="mt-3 font-semibold text-base" style={{ color: passed ? "hsl(151,100%,55%)" : "hsl(0,80%,65%)" }}>
+              <p className="mt-3 font-semibold text-base" style={{ color: passed ? "var(--quiz-correct-text)" : "var(--quiz-incorrect-text)" }}>
                 {passed ? t("quiz.pass") : t("quiz.fail")}
                 {" "}({rules.pass_mark}% {t("quiz.required")})
               </p>
@@ -187,7 +187,7 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
 
         {/* Per-question review */}
         <div className="space-y-3">
-          <h2 className="font-heading text-lg font-semibold" style={{ color: "hsl(210,20%,90%)" }}>
+          <h2 className="font-heading text-lg font-semibold" style={{ color: "var(--color-card-foreground)" }}>
             {t("quiz.review")}
           </h2>
           {questions.map((q, idx) => {
@@ -198,16 +198,16 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
                 key={q.id}
                 className="rounded-xl border p-4 space-y-2.5"
                 style={{
-                  background: correct ? "hsla(151,100%,50%,0.04)" : "hsla(0,70%,50%,0.04)",
+                  background: correct ? "var(--quiz-correct-subtle)" : "var(--quiz-incorrect-subtle)",
                   borderColor: correct ? "hsla(151,100%,50%,0.2)" : "hsla(0,70%,50%,0.2)",
                 }}
               >
                 <div className="flex items-start gap-2.5">
                   {correct
-                    ? <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "hsl(151,100%,55%)" }} />
-                    : <XCircle className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "hsl(0,80%,65%)" }} />}
-                  <p className="text-sm font-medium" style={{ color: "hsl(210,20%,90%)" }}>
-                    <span className="me-2 tabular-nums" style={{ color: "hsl(215,15%,45%)" }}>Q{idx + 1}.</span>
+                    ? <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "var(--quiz-correct-text)" }} />
+                    : <XCircle className="h-4 w-4 shrink-0 mt-0.5" style={{ color: "var(--quiz-incorrect-text)" }} />}
+                  <p className="text-sm font-medium" style={{ color: "var(--color-card-foreground)" }}>
+                    <span className="me-2 tabular-nums" style={{ color: "var(--color-muted-foreground)" }}>Q{idx + 1}.</span>
                     {getStatement(q)}
                   </p>
                 </div>
@@ -221,10 +221,10 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
                         className="rounded-md px-2.5 py-1.5 text-xs flex items-center gap-2"
                         style={
                           correctOpt
-                            ? { background: "hsla(151,100%,50%,0.1)", color: "hsl(151,100%,65%)" }
+                            ? { background: "var(--quiz-correct-bg)", color: "var(--quiz-correct-text)" }
                             : sel && !correctOpt
-                              ? { background: "hsla(0,70%,50%,0.1)", color: "hsl(0,80%,65%)" }
-                              : { color: "hsl(215,15%,45%)" }
+                              ? { background: "var(--quiz-incorrect-bg)", color: "var(--quiz-incorrect-text)" }
+                              : { color: "var(--color-muted-foreground)" }
                         }
                       >
                         {correctOpt
@@ -238,8 +238,8 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
                   })}
                 </div>
                 {explanation && (
-                  <p className="ms-6 text-xs italic" style={{ color: "hsl(215,15%,50%)" }}>
-                    <span className="font-medium not-italic" style={{ color: "hsl(151,80%,55%)" }}>{t("quiz.explanation")}: </span>
+                  <p className="ms-6 text-xs italic" style={{ color: "var(--color-muted-foreground)" }}>
+                    <span className="font-medium not-italic" style={{ color: "var(--quiz-correct-text)" }}>{t("quiz.explanation")}: </span>
                     {explanation}
                   </p>
                 )}
@@ -251,8 +251,8 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
         <div className="flex gap-3">
           <Link
             href={`/majors/${majorId}/modules/${moduleId}?tab=quizzes`}
-            className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-white/5"
-            style={{ borderColor: "hsl(220,12%,22%)", color: "hsl(215,15%,60%)" }}
+            className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-muted/50"
+            style={{ borderColor: "var(--quiz-nav-border)", color: "var(--color-muted-foreground)" }}
           >
             <ChevronLeft className="h-4 w-4" />{t("quiz.back")}
           </Link>
@@ -288,10 +288,10 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
       {/* Header */}
       <div
         className="rounded-xl border p-4"
-        style={{ background: "hsl(220,14%,10%)", borderColor: "hsl(220,12%,18%)" }}
+        style={{ background: "var(--color-card)", borderColor: "var(--ds-card-border)" }}
       >
         <div className="flex items-center justify-between gap-4 mb-3">
-          <h1 className="font-heading text-lg font-bold truncate" style={{ color: "hsl(210,20%,95%)" }}>
+          <h1 className="font-heading text-lg font-bold truncate" style={{ color: "var(--color-card-foreground)" }}>
             {title}
           </h1>
           {rules.timer_minutes && !submitted && (
@@ -305,7 +305,7 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
         </div>
 
         {/* Progress bar */}
-        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(220,12%,18%)" }}>
+        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--ds-card-border)" }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -315,7 +315,7 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
             }}
           />
         </div>
-        <p className="mt-1.5 text-[11px] tabular-nums" style={{ color: "hsl(215,15%,45%)" }}>
+        <p className="mt-1.5 text-[11px] tabular-nums" style={{ color: "var(--color-muted-foreground)" }}>
           {answered} / {questions.length} answered
         </p>
       </div>
@@ -324,12 +324,12 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
       <div
         className="rounded-xl border p-6 space-y-5"
         style={{
-          background: "hsl(220,14%,10%)",
+          background: "var(--color-card)",
           borderColor: questionCorrect === true
             ? "hsla(151,100%,50%,0.3)"
             : questionCorrect === false
               ? "hsla(0,70%,50%,0.3)"
-              : "hsl(220,12%,18%)",
+              : "var(--ds-card-border)",
         }}
       >
         <div className="flex items-start justify-between gap-3">
@@ -337,25 +337,25 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
             <div className="flex items-center gap-2 mb-3">
               <span
                 className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
-                style={{ background: "hsla(151,100%,50%,0.1)", color: "hsl(151,100%,55%)" }}
+                style={{ background: "var(--quiz-correct-bg)", color: "var(--quiz-correct-text)" }}
               >
                 {t("quiz.question")} {currentIdx + 1}/{questions.length}
               </span>
               <span
                 className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase"
-                style={{ background: "hsl(220,12%,18%)", color: "hsl(215,15%,50%)" }}
+                style={{ background: "var(--ds-card-border)", color: "var(--color-muted-foreground)" }}
               >
                 {currentQuestion.type}
               </span>
             </div>
-            <p className="text-base font-medium leading-relaxed" style={{ color: "hsl(210,20%,92%)" }}>
+            <p className="text-base font-medium leading-relaxed" style={{ color: "var(--color-card-foreground)" }}>
               {getStatement(currentQuestion)}
             </p>
           </div>
           {questionCorrect !== null && (
             questionCorrect
-              ? <CheckCircle2 className="h-6 w-6 shrink-0" style={{ color: "hsl(151,100%,55%)" }} />
-              : <XCircle className="h-6 w-6 shrink-0" style={{ color: "hsl(0,80%,65%)" }} />
+              ? <CheckCircle2 className="h-6 w-6 shrink-0" style={{ color: "var(--quiz-correct-text)" }} />
+              : <XCircle className="h-6 w-6 shrink-0" style={{ color: "var(--quiz-incorrect-text)" }} />
           )}
         </div>
 
@@ -375,28 +375,28 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
                 className="w-full text-left rounded-xl border px-4 py-3 text-sm transition-all duration-150"
                 style={
                   correctOpt ? {
-                    background: "hsla(151,100%,50%,0.1)",
-                    borderColor: "hsl(151,100%,50%,0.4)",
-                    color: "hsl(151,100%,65%)",
-                    boxShadow: "0 0 12px hsla(151,100%,50%,0.1)",
+                    background: "var(--quiz-correct-bg)",
+                    borderColor: "var(--quiz-correct-border)",
+                    color: "var(--quiz-correct-text)",
+                    boxShadow: "0 0 12px var(--quiz-correct-bg)",
                   } : wrongSelected ? {
-                    background: "hsla(0,70%,50%,0.1)",
-                    borderColor: "hsl(0,70%,50%,0.4)",
-                    color: "hsl(0,80%,70%)",
+                    background: "var(--quiz-incorrect-bg)",
+                    borderColor: "var(--quiz-incorrect-border)",
+                    color: "var(--quiz-incorrect-text)",
                   } : selected ? {
                     background: "hsla(151,100%,50%,0.07)",
                     borderColor: "hsl(151,100%,50%,0.3)",
-                    color: "hsl(210,20%,90%)",
+                    color: "var(--color-card-foreground)",
                   } : {
-                    background: "hsl(220,13%,13%)",
-                    borderColor: "hsl(220,12%,20%)",
-                    color: "hsl(215,15%,70%)",
+                    background: "var(--quiz-option-bg)",
+                    borderColor: "var(--ds-card-border)",
+                    color: "var(--color-muted-foreground)",
                   }
                 }
               >
                 <span
                   className="inline-flex items-center justify-center rounded-md w-6 h-6 me-3 text-[11px] font-bold shrink-0 align-middle"
-                  style={{ background: "hsl(220,12%,20%)", color: "hsl(215,15%,55%)" }}
+                  style={{ background: "var(--quiz-badge-bg)", color: "var(--color-muted-foreground)" }}
                 >
                   {String.fromCharCode(65 + idx)}
                 </span>
@@ -410,9 +410,9 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
         {showCorrectionNow && getExplanation(currentQuestion) && (
           <div
             className="rounded-xl border p-3 text-sm"
-            style={{ background: "hsla(151,40%,10%,0.5)", borderColor: "hsla(151,100%,50%,0.15)", color: "hsl(215,15%,65%)" }}
+            style={{ background: "var(--quiz-explanation-bg)", borderColor: "var(--quiz-correct-border)", color: "var(--color-muted-foreground)" }}
           >
-            <span className="font-medium" style={{ color: "hsl(151,80%,55%)" }}>{t("quiz.explanation")}: </span>
+            <span className="font-medium" style={{ color: "var(--quiz-correct-text)" }}>{t("quiz.explanation")}: </span>
             {getExplanation(currentQuestion)}
           </div>
         )}
@@ -428,8 +428,8 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
           type="button"
           onClick={() => setCurrentIdx(i => i - 1)}
           disabled={currentIdx === 0}
-          className="inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm transition-colors disabled:opacity-30 hover:bg-white/5"
-          style={{ borderColor: "hsl(220,12%,22%)", color: "hsl(215,15%,60%)" }}
+          className="inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm transition-colors disabled:opacity-30 hover:bg-muted/50"
+          style={{ borderColor: "var(--quiz-nav-border)", color: "var(--color-muted-foreground)" }}
         >
           <ChevronLeft className="h-4 w-4" />{t("quiz.prev")}
         </button>
@@ -441,6 +441,8 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
               key={i}
               type="button"
               onClick={() => setCurrentIdx(i)}
+              aria-label={`Question ${i + 1} of ${questions.length}`}
+              aria-current={i === currentIdx ? "step" : undefined}
               className="h-7 w-7 rounded-full text-[10px] font-bold transition-all duration-150"
               style={
                 i === currentIdx ? {
@@ -449,11 +451,11 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
                   boxShadow: "0 0 8px hsla(151,100%,50%,0.5)",
                 } : answers[q.id] !== undefined ? {
                   background: "hsla(151,100%,50%,0.15)",
-                  color: "hsl(151,100%,60%)",
+                  color: "var(--quiz-correct-text)",
                   border: "1px solid hsla(151,100%,50%,0.25)",
                 } : {
-                  background: "hsl(220,12%,18%)",
-                  color: "hsl(215,15%,50%)",
+                  background: "var(--ds-card-border)",
+                  color: "var(--color-muted-foreground)",
                 }
               }
             >
@@ -466,8 +468,8 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
           <button
             type="button"
             onClick={() => setCurrentIdx(i => i + 1)}
-            className="inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-white/5"
-            style={{ borderColor: "hsl(220,12%,22%)", color: "hsl(215,15%,60%)" }}
+            className="inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm transition-colors hover:bg-muted/50"
+            style={{ borderColor: "var(--quiz-nav-border)", color: "var(--color-muted-foreground)" }}
           >
             {t("quiz.next")}<ChevronRight className="h-4 w-4" />
           </button>
@@ -478,8 +480,8 @@ export default function QuizAttemptView({ quiz, questions, majorId, moduleId }: 
             disabled={answered < questions.length || grading}
             className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all disabled:opacity-40"
             style={{
-              background: answered === questions.length ? "hsl(151,100%,50%)" : "hsl(220,12%,20%)",
-              color: answered === questions.length ? "hsl(220,14%,7%)" : "hsl(215,15%,50%)",
+              background: answered === questions.length ? "hsl(151,100%,50%)" : "var(--color-muted)",
+              color: answered === questions.length ? "hsl(220,14%,7%)" : "var(--color-muted-foreground)",
               boxShadow: answered === questions.length ? "0 0 16px hsla(151,100%,50%,0.35)" : "none",
             }}
           >

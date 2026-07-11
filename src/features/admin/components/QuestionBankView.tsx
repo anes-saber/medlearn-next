@@ -209,8 +209,8 @@ export default function QuestionBankView() {
   };
 
   const tfOptions: QuestionOption[] = [
-    { id: "true", text: "True" },
-    { id: "false", text: "False" },
+    { id: "true", text: t("quiz.true") },
+    { id: "false", text: t("quiz.false") },
   ];
 
   if (loading) return <div className="container py-12 text-muted-foreground">{t("admin.loading")}</div>;
@@ -258,7 +258,7 @@ export default function QuestionBankView() {
                 onChange={e => setPayload(p => ({ ...p, module_id: e.target.value }))}
                 disabled={!payload.major_id}
               >
-                <option value="">— {t("admin.module")} —</option>
+                <option value="">— {payload.major_id ? t("admin.module") : t("admin.quiz.select_major_hint")} —</option>
                 {filteredModules.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             </div>
@@ -281,7 +281,7 @@ export default function QuestionBankView() {
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">
                   {t("admin.questions.statement")} ({lang.toUpperCase()})
                 </label>
-                <textarea
+                <textarea placeholder={t("admin.questions.statement_placeholder")}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
                   value={(payload as unknown as Record<string, unknown>)[`statement_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`statement_${lang}`]: e.target.value }))}
@@ -295,9 +295,9 @@ export default function QuestionBankView() {
             {(["en", "fr"] as const).map(lang => (
               <div key={lang}>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                  Description ({lang.toUpperCase()})
+                  {t("admin.description")} ({lang.toUpperCase()})
                 </label>
-                <textarea
+                <textarea placeholder={t("admin.description_placeholder")}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
                   value={(payload as unknown as Record<string, unknown>)[`description_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`description_${lang}`]: e.target.value }))}
@@ -343,7 +343,7 @@ export default function QuestionBankView() {
                     className={`w-7 h-7 shrink-0 rounded-full border-2 flex items-center justify-center text-xs font-bold transition-colors ${
                       isCorrect(opt.id) ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary"
                     }`}
-                    title={isCorrect(opt.id) ? "Correct answer" : "Mark as correct"}
+                    title={isCorrect(opt.id) ? t("admin.questions.correct") + " ✓" : t("admin.questions.mark_correct")}
                   >
                     {opt.id}
                   </button>
@@ -374,7 +374,7 @@ export default function QuestionBankView() {
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">
                   {t("admin.questions.explanation")} ({lang.toUpperCase()})
                 </label>
-                <textarea
+                <textarea placeholder={t("admin.questions.explanation_placeholder")}
                   className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[60px] resize-y"
                   value={(payload as unknown as Record<string, unknown>)[`explanation_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`explanation_${lang}`]: e.target.value }))}
@@ -392,7 +392,7 @@ export default function QuestionBankView() {
                 value={payload.difficulty ?? ""}
                 onChange={e => setPayload(p => ({ ...p, difficulty: (e.target.value || null) as typeof payload.difficulty }))}
               >
-                <option value="">— none —</option>
+                <option value="">— {t("admin.questions.difficulty_none")} —</option>
                 {DIFF_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
@@ -441,18 +441,18 @@ export default function QuestionBankView() {
       {editing === null && (
         <div className="flex flex-wrap gap-2">
           <select className="rounded-md border border-input bg-background px-3 py-1.5 text-sm" value={filterMajor} onChange={e => { setFilterMajor(e.target.value); setFilterModule(""); }}>
-            <option value="">All Majors</option>
+            <option value="">{t("admin.questions.all_majors")}</option>
             {majors.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
           </select>
           <select className="rounded-md border border-input bg-background px-3 py-1.5 text-sm" value={filterModule} onChange={e => setFilterModule(e.target.value)} disabled={!filterMajor}>
-            <option value="">All Modules</option>
+            <option value="">{t("admin.questions.all_modules")}</option>
             {(modulesByMajor[filterMajor] ?? []).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
           </select>
           <select className="rounded-md border border-input bg-background px-3 py-1.5 text-sm" value={filterType} onChange={e => setFilterType(e.target.value)}>
-            <option value="">All Types</option>
+            <option value="">{t("admin.questions.all_types")}</option>
             {TYPE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
-          <Input placeholder="Search statement…" value={search} onChange={e => setSearch(e.target.value)} className="max-w-xs" />
+          <Input placeholder={t("admin.questions.search")} value={search} onChange={e => setSearch(e.target.value)} className="max-w-xs" />
         </div>
       )}
 
@@ -478,7 +478,7 @@ export default function QuestionBankView() {
                       : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
                     }`}>{q.type.toUpperCase()}</span>
                     {q.difficulty && <span className="text-xs text-muted-foreground capitalize">{q.difficulty}</span>}
-                    {!q.published && <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Draft</span>}
+                    {!q.published && <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{t("admin.quiz.draft")}</span>}
                   </div>
                   <p className="line-clamp-2 text-sm font-medium">{stmt}</p>
                   <p className="mt-0.5 text-xs text-muted-foreground">{majorName} › {moduleName}</p>

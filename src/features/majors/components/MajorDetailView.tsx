@@ -15,12 +15,12 @@ type MajorDetailViewProps = {
 };
 
 const PALETTE = [
-  { icon: "text-teal-400", glow: "from-teal-500/15 to-transparent" },
-  { icon: "text-blue-400",    glow: "from-blue-500/15 to-transparent" },
-  { icon: "text-violet-400",  glow: "from-violet-500/15 to-transparent" },
-  { icon: "text-amber-400",   glow: "from-amber-500/15 to-transparent" },
-  { icon: "text-rose-400",    glow: "from-rose-500/15 to-transparent" },
-  { icon: "text-sky-400",     glow: "from-sky-500/15 to-transparent" },
+  { icon: "text-teal-500 light:text-teal-700", glow: "from-teal-500/15 to-transparent" },
+  { icon: "text-blue-500 light:text-blue-700",    glow: "from-blue-500/15 to-transparent" },
+  { icon: "text-violet-500 light:text-violet-700",  glow: "from-violet-500/15 to-transparent" },
+  { icon: "text-amber-500 light:text-amber-700",   glow: "from-amber-500/15 to-transparent" },
+  { icon: "text-rose-500 light:text-rose-700",    glow: "from-rose-500/15 to-transparent" },
+  { icon: "text-sky-500 light:text-sky-700",     glow: "from-sky-500/15 to-transparent" },
 ];
 
 export default function MajorDetailView({ majorId, major, modules, resourceCounts, basePath = "/majors" }: MajorDetailViewProps) {
@@ -77,6 +77,7 @@ export default function MajorDetailView({ majorId, major, modules, resourceCount
                 placeholder={t("modules.search") || "Search modules…"}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                aria-label={t("modules.search") || "Search modules"}
                 className="w-full rounded-full border border-border ps-9 pe-4 py-2 text-sm outline-none bg-card text-foreground placeholder-muted-foreground focus:border-primary/40"
               />
             </div>

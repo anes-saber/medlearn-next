@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { GraduationCap, ArrowRight, Sparkles, Users, ChevronRight, Stethoscope, Activity, ClipboardList } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
 import type { MajorRow } from "@/features/majors/services/browse";
 
 type HomeViewProps = {
@@ -12,12 +13,12 @@ type HomeViewProps = {
 };
 
 const SPECIALITY_COLORS = [
-  { gradient: "from-teal-500/20 to-cyan-500/5", class: "text-teal-500" },
-  { gradient: "from-blue-500/20 to-cyan-500/5",    class: "text-blue-400" },
-  { gradient: "from-violet-500/20 to-purple-500/5", class: "text-violet-400" },
-  { gradient: "from-amber-500/20 to-orange-500/5",  class: "text-amber-400" },
-  { gradient: "from-rose-500/20 to-pink-500/5",     class: "text-rose-400" },
-  { gradient: "from-sky-500/20 to-indigo-500/5",    class: "text-sky-400" },
+  { gradient: "from-teal-500/15 to-cyan-500/3", class: "text-teal-600" },
+  { gradient: "from-blue-500/15 to-cyan-500/3",    class: "text-blue-500" },
+  { gradient: "from-violet-500/15 to-purple-500/3", class: "text-violet-500" },
+  { gradient: "from-amber-500/15 to-orange-500/3",  class: "text-amber-600" },
+  { gradient: "from-rose-500/15 to-pink-500/3",     class: "text-rose-500" },
+  { gradient: "from-sky-500/15 to-indigo-500/3",    class: "text-sky-500" },
 ];
 
 export default function HomeView({ majors, stats, moduleCounts }: HomeViewProps) {
@@ -56,19 +57,17 @@ export default function HomeView({ majors, stats, moduleCounts }: HomeViewProps)
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/majors">
-              <button
-                className={`group inline-flex items-center gap-2 px-8 py-3.5 text-sm btn-primary-clinical`}
-              >
-                {t("home.explore")}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </button>
+              <Button asChild size="lg" className="gap-2">
+                <span className="group">
+                  {t("home.explore")}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Button>
             </Link>
             <Link href="/majors">
-              <button
-                className="inline-flex items-center gap-2 rounded-md border border-border px-8 py-3.5 text-sm font-medium transition-all duration-200 hover:bg-accent/10 text-muted-foreground bg-card"
-              >
-                {t("home.learnmore") || "Browse Modules"}
-              </button>
+              <Button asChild variant="outline" size="lg">
+                <span>{t("home.learnmore") || "Browse Modules"}</span>
+              </Button>
             </Link>
           </div>
         </div>
@@ -77,22 +76,22 @@ export default function HomeView({ majors, stats, moduleCounts }: HomeViewProps)
       {/* ── STATS ───────────────────────────────────────────────────────────── */}
       <section className="py-12 border-b border-border">
         <div className="container">
-          <div className={`grid grid-cols-1 sm:grid-cols-3 gap-4`}>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
-              { icon: Stethoscope, value: stats.majors,    label: t("nav.majors"),             colorClass: "text-primary" },
-              { icon: Activity,    value: stats.modules,   label: t("home.stat.modules") || "Modules", colorClass: "text-blue-400" },
-              { icon: ClipboardList, value: stats.resources, label: t("home.stat.resources") || "Resources", colorClass: "text-violet-400" },
+              { icon: Stethoscope, value: stats.majors,    label: t("nav.majors"),             bg: "from-teal-500/12 to-teal-600/3", iconColor: "text-teal-600" },
+              { icon: Activity,    value: stats.modules,   label: t("home.stat.modules") || "Modules", bg: "from-blue-500/12 to-blue-600/3", iconColor: "text-blue-500" },
+              { icon: ClipboardList, value: stats.resources, label: t("home.stat.resources") || "Resources", bg: "from-violet-500/12 to-violet-600/3", iconColor: "text-violet-500" },
             ].map((stat) => (
               <div
                 key={stat.label}
-                className={`relative flex flex-col items-center justify-center gap-3 py-8 px-6 card-clinical border-t-2 border-t-primary`}
+                className="relative flex flex-col items-center justify-center gap-4 py-10 px-6 rounded-2xl border border-border bg-card"
               >
-                <div className={`rounded-xl p-2.5 bg-primary/10`}>
-                  <stat.icon className={`h-6 w-6 ${stat.colorClass}`} aria-hidden />
+                <div className={`rounded-xl p-3 bg-gradient-to-br ${stat.bg}`}>
+                  <stat.icon className={`h-7 w-7 ${stat.iconColor}`} aria-hidden />
                 </div>
                 <div className="text-center">
-                  <p className={`text-3xl font-bold tabular-nums tracking-tight text-foreground`}>{stat.value}</p>
-                  <p className={`mt-1 text-[11px] font-medium uppercase tracking-widest text-muted-foreground`}>{stat.label}</p>
+                  <p className="text-4xl font-black tabular-nums tracking-tight text-foreground">{stat.value}</p>
+                  <p className="mt-1 text-xs font-medium text-muted-foreground">{stat.label}</p>
                 </div>
               </div>
             ))}
@@ -165,9 +164,17 @@ export default function HomeView({ majors, stats, moduleCounts }: HomeViewProps)
             })}
 
             {majors.length === 0 && (
-              <div className="col-span-full rounded-2xl border border-dashed border-border py-12 text-center bg-card">
-                <GraduationCap className="mx-auto h-8 w-8 mb-2 text-muted-foreground" />
-                <p className="text-xs text-muted-foreground">{t("empty.majors")}</p>
+              <div className="col-span-full rounded-2xl border border-dashed border-border py-14 px-6 text-center bg-card">
+                <div className="inline-flex rounded-xl p-3 bg-primary/10 mb-4">
+                  <GraduationCap className="h-8 w-8 text-primary/60" />
+                </div>
+                <h3 className="font-heading text-lg font-semibold text-foreground mb-1">{t("home.empty_title")}</h3>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mb-5">{t("home.empty_desc")}</p>
+                <Link href="/majors">
+                  <Button asChild size="sm" className="gap-2">
+                    <span>{t("home.empty_cta")} <ArrowRight className="h-4 w-4" /></span>
+                  </Button>
+                </Link>
               </div>
             )}
           </div>
@@ -176,7 +183,7 @@ export default function HomeView({ majors, stats, moduleCounts }: HomeViewProps)
 
       {/* ── FOOTER STRIP ────────────────────────────────────────────────────── */}
       <section className="py-12 text-center border-t border-border">
-        <div className="container">
+        <div className="container mx-auto max-w-lg">
           <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-[10px] text-muted-foreground mb-4">
             <Users className="h-3 w-3" />
             {t("home.community") || "Built for the medical student community"}
@@ -188,11 +195,9 @@ export default function HomeView({ majors, stats, moduleCounts }: HomeViewProps)
             {t("home.cta_sub") || "No account needed. Just open and learn."}
           </p>
           <Link href="/majors">
-            <button
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs btn-primary-clinical"
-            >
-              {t("home.explore")} <ArrowRight className="h-3 w-3" />
-            </button>
+            <Button asChild size="sm" className="gap-2">
+              <span>{t("home.explore")} <ArrowRight className="h-3 w-3" /></span>
+            </Button>
           </Link>
         </div>
       </section>

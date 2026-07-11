@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { GraduationCap, Search, ChevronRight } from "lucide-react";
+import { GraduationCap, Plus, Search, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
 import type { MajorRow } from "@/features/majors/services/browse";
 
 type MajorsViewProps = {
@@ -13,12 +14,12 @@ type MajorsViewProps = {
 };
 
 const PALETTE = [
-  { icon: "text-teal-400", border: "border-teal-500/25", glow: "from-teal-500/20 to-transparent" },
-  { icon: "text-blue-400",    border: "border-blue-400/25",    glow: "from-blue-500/20 to-transparent" },
-  { icon: "text-violet-400",  border: "border-violet-400/25",  glow: "from-violet-500/20 to-transparent" },
-  { icon: "text-amber-400",   border: "border-amber-400/25",   glow: "from-amber-500/20 to-transparent" },
-  { icon: "text-rose-400",    border: "border-rose-400/25",    glow: "from-rose-500/20 to-transparent" },
-  { icon: "text-sky-400",     border: "border-sky-400/25",     glow: "from-sky-500/20 to-transparent" },
+  { icon: "text-teal-500 light:text-teal-700", border: "border-teal-500/25", glow: "from-teal-500/20 to-transparent" },
+  { icon: "text-blue-500 light:text-blue-700",    border: "border-blue-400/25",    glow: "from-blue-500/20 to-transparent" },
+  { icon: "text-violet-500 light:text-violet-700",  border: "border-violet-400/25",  glow: "from-violet-500/20 to-transparent" },
+  { icon: "text-amber-500 light:text-amber-700",   border: "border-amber-400/25",   glow: "from-amber-500/20 to-transparent" },
+  { icon: "text-rose-500 light:text-rose-700",    border: "border-rose-400/25",    glow: "from-rose-500/20 to-transparent" },
+  { icon: "text-sky-500 light:text-sky-700",     border: "border-sky-400/25",     glow: "from-sky-500/20 to-transparent" },
 ];
 
 export default function MajorsView({ majors, moduleCounts, basePath = "/majors" }: MajorsViewProps) {
@@ -65,6 +66,7 @@ export default function MajorsView({ majors, moduleCounts, basePath = "/majors" 
                 placeholder={t("majors.search")}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                aria-label={t("majors.search")}
                 className="w-full rounded-full border border-border ps-9 pe-4 py-2 text-sm outline-none transition-colors bg-card text-foreground placeholder-muted-foreground focus:border-primary/40"
               />
             </div>
@@ -75,9 +77,19 @@ export default function MajorsView({ majors, moduleCounts, basePath = "/majors" 
       {/* ── Grid ──────────────────────────────────────────────────────────── */}
       <div className="container py-12">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-20 text-center bg-card">
-            <GraduationCap className="h-12 w-12 mb-4 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">{t("empty.majors")}</p>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-20 px-6 text-center bg-card">
+            <div className="inline-flex rounded-xl p-3 bg-primary/10 mb-4">
+              <GraduationCap className="h-10 w-10 text-primary/50" />
+            </div>
+            <h3 className="font-heading text-lg font-semibold text-foreground mb-1">{t("majors.empty_title")}</h3>
+            <p className="text-sm text-muted-foreground max-w-sm mb-5">{t(search ? "majors.empty_search" : "majors.empty_desc")}</p>
+            {!search && (
+              <Link href="/admin/catalog">
+                <Button asChild className="gap-2">
+                  <span><Plus className="h-4 w-4" /> {t("majors.empty_cta")}</span>
+                </Button>
+              </Link>
+            )}
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

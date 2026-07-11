@@ -74,13 +74,15 @@ export default function ModuleTabsView({
 
         {/* ── Tab bar ─────────────────────────────────────────────────────── */}
         <div className="container">
-          <div className="flex gap-0 -mb-px">
+          <div className="flex gap-0 -mb-px" role="tablist">
             {tabs.map(({ key, label, icon: Icon, count }) => {
               const active = tab === key;
               return (
                 <button
                   key={key}
                   type="button"
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => setTab(key)}
                   className={`relative flex items-center gap-2 px-5 py-3 text-sm font-medium transition-all duration-150 border-b-2 cursor-pointer ${
                     active

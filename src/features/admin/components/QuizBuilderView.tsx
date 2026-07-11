@@ -183,7 +183,7 @@ export default function QuizBuilderView() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold">{t("admin.nav.quizzes")}</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{quizzes.length} quizzes</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{quizzes.length} {t("quiz.plural")}</p>
         </div>
         {editing === null && (
           <Button id="add-quiz-btn" onClick={startNew} size="sm">
@@ -198,7 +198,7 @@ export default function QuizBuilderView() {
       {/* Editor */}
       {editing !== null && (
         <div className="rounded-xl border border-border bg-card p-6 space-y-6">
-          <h2 className="font-heading text-lg font-semibold">{editing === "new" ? "New Quiz" : "Edit Quiz"}</h2>
+          <h2 className="font-heading text-lg font-semibold">{editing === "new" ? t("quiz.new") : t("quiz.edit")}</h2>
 
           {/* Major / Module */}
           <div className="grid gap-3 sm:grid-cols-2">
@@ -214,7 +214,7 @@ export default function QuizBuilderView() {
               <label className="text-xs font-medium text-muted-foreground mb-1 block">{t("admin.module")} *</label>
               <select className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={payload.module_id} onChange={e => setPayload(p => ({ ...p, module_id: e.target.value }))} disabled={!payload.major_id}>
-                <option value="">— {t("admin.module")} —</option>
+                <option value="">— {payload.major_id ? t("admin.module") : t("admin.quiz.select_major_hint")} —</option>
                 {filteredModules.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             </div>
@@ -224,8 +224,8 @@ export default function QuizBuilderView() {
           <div className="grid gap-3 sm:grid-cols-2">
             {(["en", "fr"] as const).map(lang => (
               <div key={lang}>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Title ({lang.toUpperCase()})</label>
-                <Input value={(payload as unknown as Record<string, unknown>)[`title_${lang}`] as string}
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">{t("admin.quiz.title")} ({lang.toUpperCase()})</label>
+                <Input placeholder={t("admin.quiz.title_placeholder")} value={(payload as unknown as Record<string, unknown>)[`title_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`title_${lang}`]: e.target.value }))} />
               </div>
             ))}
@@ -235,8 +235,8 @@ export default function QuizBuilderView() {
           <div className="grid gap-3 sm:grid-cols-2">
             {(["en", "fr"] as const).map(lang => (
               <div key={lang}>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Description ({lang.toUpperCase()})</label>
-                <textarea className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">{t("admin.description")} ({lang.toUpperCase()})</label>
+                <textarea placeholder={t("admin.description_placeholder")} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[80px] resize-y"
                   value={(payload as unknown as Record<string, unknown>)[`description_${lang}`] as string}
                   onChange={e => setPayload(p => ({ ...p, [`description_${lang}`]: e.target.value }))} />
               </div>
@@ -245,58 +245,58 @@ export default function QuizBuilderView() {
 
           {/* Rules */}
           <div className="rounded-lg border border-border p-4 space-y-3">
-            <p className="text-sm font-semibold">Quiz Rules</p>
+            <p className="text-sm font-semibold">{t("quiz.rules")}</p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Mode</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("quiz.mode")}</label>
                 <select className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   value={payload.rules.mode} onChange={e => setRule("mode", e.target.value as "practice" | "exam")}>
-                  <option value="practice">Practice</option>
-                  <option value="exam">Exam</option>
+                  <option value="practice">{t("quiz.mode_practice")}</option>
+                  <option value="exam">{t("quiz.mode_exam")}</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Timer (minutes)</label>
-                <Input type="number" min={0} placeholder="No timer"
+                <label className="text-xs text-muted-foreground mb-1 block">{t("quiz.timer")}</label>
+                <Input type="number" min={0} placeholder={t("quiz.no_timer")}
                   value={payload.rules.timer_minutes ?? ""}
                   onChange={e => setRule("timer_minutes", e.target.value ? Number(e.target.value) : null)} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Navigation</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("quiz.navigation")}</label>
                 <select className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   value={payload.rules.navigation} onChange={e => setRule("navigation", e.target.value as "free" | "sequential")}>
-                  <option value="free">Free</option>
-                  <option value="sequential">Sequential</option>
+                  <option value="free">{t("quiz.nav_free")}</option>
+                  <option value="sequential">{t("quiz.nav_sequential")}</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Correction</label>
+                <label className="text-xs text-muted-foreground mb-1 block">{t("quiz.correction")}</label>
                 <select className="w-full rounded-md border border-input bg-background px-3 py-1.5 text-sm"
                   value={payload.rules.correction} onChange={e => setRule("correction", e.target.value as "instant" | "at_end")}>
-                  <option value="instant">Instant</option>
-                  <option value="at_end">At End</option>
+                  <option value="instant">{t("quiz.correction_instant")}</option>
+                  <option value="at_end">{t("quiz.correction_end")}</option>
                 </select>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Max Attempts</label>
-                <Input type="number" min={1} placeholder="Unlimited"
+                <label className="text-xs text-muted-foreground mb-1 block">{t("quiz.attempts")}</label>
+                <Input type="number" min={1} placeholder={t("quiz.unlimited")}
                   value={payload.rules.attempts ?? ""}
                   onChange={e => setRule("attempts", e.target.value ? Number(e.target.value) : null)} />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Pass Mark (%)</label>
-                <Input type="number" min={0} max={100} placeholder="None"
+                <label className="text-xs text-muted-foreground mb-1 block">{t("quiz.pass_mark")}</label>
+                <Input type="number" min={0} max={100} placeholder={t("quiz.no_pass_mark")}
                   value={payload.rules.pass_mark ?? ""}
                   onChange={e => setRule("pass_mark", e.target.value ? Number(e.target.value) : null)} />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="flex items-center gap-2 text-sm cursor-pointer mt-4">
                   <input type="checkbox" checked={payload.rules.randomize} onChange={e => setRule("randomize", e.target.checked)} />
-                  Randomize order
+                  {t("quiz.randomize")}
                 </label>
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <input type="checkbox" checked={payload.rules.negative_marking} onChange={e => setRule("negative_marking", e.target.checked)} />
-                  Negative marking
+                  {t("quiz.negative_marking")}
                 </label>
               </div>
             </div>
@@ -305,11 +305,11 @@ export default function QuizBuilderView() {
           {/* Questions picker */}
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="space-y-2">
-              <p className="text-sm font-semibold">Available Questions ({availableQuestions.length})</p>
-              <Input placeholder="Search…" value={qSearch} onChange={e => setQSearch(e.target.value)} />
+              <p className="text-sm font-semibold">{t("admin.quiz.available")} ({availableQuestions.length})</p>
+              <Input placeholder={t("admin.quiz.search_questions")} value={qSearch} onChange={e => setQSearch(e.target.value)} />
               <div className="max-h-60 overflow-y-auto space-y-1.5 rounded-lg border border-border p-2">
                 {availableQuestions.length === 0 ? (
-                  <p className="text-xs text-muted-foreground p-2">No published questions match the selected major/module.</p>
+                  <p className="text-xs text-muted-foreground p-2">{t("admin.quiz.no_questions_match")}</p>
                 ) : availableQuestions.slice(0, 50).map(q => (
                   <button key={q.id} type="button" onClick={() => addQuestion(q.id)}
                     className="w-full text-left rounded-md border border-transparent hover:border-primary/40 hover:bg-accent px-3 py-2 text-xs transition-colors">
@@ -320,10 +320,10 @@ export default function QuizBuilderView() {
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-semibold">Selected ({selectedQuestions.length})</p>
+              <p className="text-sm font-semibold">{t("admin.quiz.selected")} ({selectedQuestions.length})</p>
               <div className="max-h-72 overflow-y-auto space-y-1.5 rounded-lg border border-border p-2">
                 {selectedQuestions.length === 0 ? (
-                  <p className="text-xs text-muted-foreground p-2">No questions added yet.</p>
+                  <p className="text-xs text-muted-foreground p-2">{t("admin.quiz.no_questions_selected")}</p>
                 ) : selectedQuestions.map((q, idx) => (
                   <div key={q.id} className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
                     <span className="text-xs text-muted-foreground w-5 shrink-0">{idx + 1}.</span>
@@ -357,8 +357,8 @@ export default function QuizBuilderView() {
         <div className="space-y-3">
           {quizzes.length === 0 ? (
             <div className="rounded-lg border border-dashed border-border bg-card/50 px-6 py-10 text-center">
-              <p className="text-sm text-muted-foreground">No quizzes yet.</p>
-              <Button size="sm" className="mt-4" onClick={startNew}><Plus className="h-4 w-4 me-1.5" />Create Quiz</Button>
+              <p className="text-sm text-muted-foreground">{t("admin.quiz.empty")}</p>
+              <Button size="sm" className="mt-4" onClick={startNew}><Plus className="h-4 w-4 me-1.5" />{t("admin.quiz.create")}</Button>
             </div>
           ) : quizzes.map(quiz => {
             const title = quiz.title_en || quiz.title_fr || "Untitled";
@@ -372,7 +372,7 @@ export default function QuizBuilderView() {
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       rules?.mode === "exam" ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" : "bg-teal-700/15 text-teal-400 dark:bg-teal-900/30 dark:text-teal-300"
                     }`}>{rules?.mode ?? "practice"}</span>
-                    {!quiz.published && <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Draft</span>}
+                    {!quiz.published && <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{t("admin.quiz.draft")}</span>}
                     {rules?.timer_minutes && <span className="text-xs text-muted-foreground">⏱ {rules.timer_minutes}m</span>}
                   </div>
                   <p className="font-medium text-sm">{title}</p>

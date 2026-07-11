@@ -65,6 +65,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive ? "page" : undefined}
                 className={`text-sm font-medium tracking-wide transition-all duration-200 py-5 ${
                   isActive
                     ? "text-primary border-b-2 border-primary"
@@ -154,6 +155,7 @@ export default function Header() {
                     key={link.href}
                     href={link.href}
                     onClick={closeMobileMenu}
+                    aria-current={isActive ? "page" : undefined}
                     className={`text-lg font-medium tracking-wide py-2 border-s-2 ps-3 transition-all ${
                       isActive
                         ? "text-primary border-primary bg-primary/5"

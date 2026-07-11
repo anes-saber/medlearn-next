@@ -31,6 +31,7 @@ function getInitialTheme(): Theme {
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
+  root.classList.add("theme-transition");
   if (theme === "light") {
     root.classList.add("light");
     root.classList.remove("dark");
@@ -38,6 +39,7 @@ function applyTheme(theme: Theme) {
     root.classList.remove("light");
     root.classList.add("dark");
   }
+  setTimeout(() => root.classList.remove("theme-transition"), 300);
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

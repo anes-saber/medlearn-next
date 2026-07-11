@@ -173,6 +173,7 @@ export default function ModuleResourcesView({ resources, moduleName }: ModuleRes
               placeholder={t("resources.search") || "Search resources…"}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              aria-label={t("resources.search") || "Search resources"}
               className="w-full rounded-2xl border border-border ps-12 pe-6 py-4 text-base outline-none transition-colors bg-card text-foreground placeholder-muted-foreground focus:border-primary/40"
             />
           </div>

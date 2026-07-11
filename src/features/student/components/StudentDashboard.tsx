@@ -13,10 +13,10 @@ import ProgressRing from "@/components/ui/progress-ring";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { DashboardData } from "@/features/student/services/dashboard";
 
-const CLINICAL_GREEN = "hsl(151, 50%, 35%)";
-const CLINICAL_GREEN_LIGHT = "hsl(151, 50%, 45%)";
-const ALERT_RED = "hsl(0, 69%, 51%)";
-const AMBER = "hsl(38, 92%, 50%)";
+const CLINICAL_GREEN = "var(--ds-teal)";
+const CLINICAL_GREEN_LIGHT = "var(--ds-teal)";
+const ALERT_RED = "var(--ds-red)";
+const AMBER = "var(--ds-amber)";
 
 export default function StudentDashboard({ data }: { data: DashboardData }) {
   const { t } = useLanguage();

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isAdminOrTeacher } from "@/lib/rbac";
+import { isAdminOrTeacher, type UserRole } from "@/lib/rbac";
 import AdminShell from "@/features/admin/components/AdminShell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
