@@ -19,7 +19,6 @@ if (isProd) {
 
 const nextConfig: NextConfig = {
   compress: true,
-  output: "standalone",
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],
