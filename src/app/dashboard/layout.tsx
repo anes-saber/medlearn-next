@@ -13,13 +13,9 @@ export default async function StudentLayout({ children }: { children: React.Reac
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
+  const role = (user.app_metadata?.role as string) ?? "unpaid-student";
 
-  if (!profile || profile.role !== "paid-student") {
+  if (role !== "paid-student") {
     redirect("/payment-pending");
   }
 

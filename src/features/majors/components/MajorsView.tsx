@@ -52,7 +52,9 @@ export default function MajorsView({ majors, moduleCounts, basePath = "/majors" 
                 {t("majors.title")}
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                {majors.length} {majors.length === 1 ? "major" : "majors"} available
+                {majors.length === 1
+                  ? t("majors.available").replace("{count}", String(majors.length))
+                  : t("majors.available_plural").replace("{count}", String(majors.length))}
               </p>
             </div>
 
@@ -60,7 +62,7 @@ export default function MajorsView({ majors, moduleCounts, basePath = "/majors" 
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-muted-foreground" />
               <input
                 type="text"
-                placeholder={t("majors.search") || "Search majors…"}
+                placeholder={t("majors.search")}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full rounded-full border border-border ps-9 pe-4 py-2 text-sm outline-none transition-colors bg-card text-foreground placeholder-muted-foreground focus:border-primary/40"

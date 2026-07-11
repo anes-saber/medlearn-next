@@ -17,10 +17,10 @@ const navItems = [
 ];
 
 const MED_SCHOOL_YEARS = [
-  { year: "Year 1", subtitle: "Foundations" },
-  { year: "Year 2", subtitle: "Pre-Clinical" },
-  { year: "Year 3", subtitle: "Clinical" },
-  { year: "Year 4", subtitle: "Internship" },
+  { yearKey: "student.shell.year1", subKey: "student.shell.year1_sub" },
+  { yearKey: "student.shell.year2", subKey: "student.shell.year2_sub" },
+  { yearKey: "student.shell.year3", subKey: "student.shell.year3_sub" },
+  { yearKey: "student.shell.year4", subKey: "student.shell.year4_sub" },
 ];
 
 const currentYearIndex = 0;
@@ -61,7 +61,7 @@ export default function StudentShell({ children }: { children: React.ReactNode }
         {/* ── Medical School Timeline ──────────────────── */}
         <div className="mt-6 px-3">
           <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-            Clinical Journey
+            {t("student.shell.clinical_journey")}
           </p>
           <div className="relative">
             <div className="absolute left-[11px] top-1 bottom-1 w-px bg-muted" />
@@ -92,10 +92,10 @@ export default function StudentShell({ children }: { children: React.ReactNode }
                       <p className={`text-xs font-medium leading-tight ${
                         isActive ? "text-card-foreground" : isPast ? "text-muted-foreground/70" : "text-muted-foreground/50"
                       }`}>
-                        {stage.year}
+                        {t(stage.yearKey)}
                       </p>
                       <p className="text-[10px] leading-tight mt-0.5 text-muted-foreground/50">
-                        {stage.subtitle}
+                        {t(stage.subKey)}
                       </p>
                     </div>
                     {isActive && (
@@ -111,10 +111,10 @@ export default function StudentShell({ children }: { children: React.ReactNode }
         {/* ── Semester info at bottom ──────────────────── */}
         <div className="mt-auto pt-4 border-t border-border">
           <p className="px-3 text-[10px] font-medium text-accent">
-            Semester 1 · 2025/26
+            {t("student.shell.semester")}
           </p>
           <p className="px-3 text-[10px] mt-0.5 text-muted-foreground/40">
-            MEDlearn Student
+            {t("student.shell.branding")}
           </p>
         </div>
       </aside>

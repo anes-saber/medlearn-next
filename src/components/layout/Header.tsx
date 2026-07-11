@@ -85,7 +85,7 @@ export default function Header() {
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors cursor-pointer"
-              aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+                aria-label={t("header.toggle_theme").replace("{mode}", isDark ? "light" : "dark")}
             >
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
@@ -130,7 +130,7 @@ export default function Header() {
           <button
             onClick={toggleMobileMenu}
             className="flex md:hidden items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors cursor-pointer"
-            aria-label="Toggle navigation menu"
+            aria-label={t("header.toggle_menu")}
           >
             {isMobileMenuOpen ? (
               <X className="h-6 w-6 text-primary" />
@@ -171,12 +171,12 @@ export default function Header() {
             {/* Theme Toggle (Mobile) */}
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground font-semibold tracking-wider uppercase">
-                {isDark ? "Light Mode" : "Dark Mode"}
+                {isDark ? t("header.light_mode") : t("header.dark_mode")}
               </span>
               <button
                 onClick={() => { toggleTheme(); }}
                 className="flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-colors cursor-pointer"
-                aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+              aria-label={t("header.toggle_theme").replace("{mode}", isDark ? "light" : "dark")}
               >
                 {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
@@ -187,7 +187,7 @@ export default function Header() {
             {/* Language Switcher */}
             <div className="flex flex-col gap-2">
               <span className="text-xs text-muted-foreground font-semibold tracking-wider uppercase flex items-center gap-1.5">
-                <Globe className="h-3.5 w-3.5" /> Language / Langue
+                <Globe className="h-3.5 w-3.5" /> {t("header.language")}
               </span>
               <div className="flex items-center gap-1 rounded-sm border border-primary/20 bg-background/40 p-1 w-fit">
                 {languages.map((lang) => (

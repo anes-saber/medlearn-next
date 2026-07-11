@@ -10,6 +10,7 @@ import {
   PenLine,
 } from "lucide-react";
 import ProgressRing from "@/components/ui/progress-ring";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { DashboardData } from "@/features/student/services/dashboard";
 
 const CLINICAL_GREEN = "hsl(151, 50%, 35%)";
@@ -18,6 +19,7 @@ const ALERT_RED = "hsl(0, 69%, 51%)";
 const AMBER = "hsl(38, 92%, 50%)";
 
 export default function StudentDashboard({ data }: { data: DashboardData }) {
+  const { t } = useLanguage();
   const { profile, recentAttempts, avgScore, retentionScore, majors, modules } = data;
 
   const examReadiness = Math.min(100, avgScore + 10);
@@ -29,20 +31,20 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
       <div className="rounded-2xl border border-border bg-card p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-5 shadow-sm">
         <div className="flex-1 min-w-0">
           <p className="font-heading text-xl md:text-2xl font-bold tracking-tight text-card-foreground">
-            {profile.fullName || "Medical Student"}
+            {profile.fullName || t("student.dashboard.default_name")}
           </p>
           <p className="text-xs mt-0.5 text-muted-foreground/70">
             {profile.email}
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 mt-3">
             <div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">Semester</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">{t("student.dashboard.semester")}</span>
               <p className="text-sm font-medium mt-0.5 text-card-foreground/80">
-                Semester 1 · 2025/26
+                {t("student.dashboard.semester_info")}
               </p>
             </div>
             <div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">Average Score</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">{t("student.dashboard.avg_score")}</span>
               <p className="text-sm font-mono font-bold mt-0.5" style={{ color: avgScore >= 70 ? CLINICAL_GREEN_LIGHT : AMBER }}>
                 {avgScore}%
               </p>
@@ -59,8 +61,8 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
             </span>
           </ProgressRing>
           <div className="hidden sm:block">
-            <p className="text-xs font-medium text-muted-foreground/70">Overall</p>
-            <p className="text-[11px] text-muted-foreground/50">Academic Progress</p>
+            <p className="text-xs font-medium text-muted-foreground/70">{t("student.dashboard.overall")}</p>
+            <p className="text-[11px] text-muted-foreground/50">{t("student.dashboard.academic_progress")}</p>
           </div>
         </div>
       </div>
@@ -69,25 +71,25 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
       <div className="grid gap-4 sm:grid-cols-3">
         {[
           {
-            label: "Exam Readiness",
+            label: t("student.dashboard.exam_readiness"),
             value: examReadiness,
             icon: Target,
             color: examReadiness >= 70 ? CLINICAL_GREEN : examReadiness >= 40 ? AMBER : ALERT_RED,
-            desc: `${recentAttempts.length} attempt${recentAttempts.length !== 1 ? "s" : ""} recorded`,
+            desc: `${recentAttempts.length} ${recentAttempts.length === 1 ? t("student.dashboard.attempt_recorded") : t("student.dashboard.attempts_recorded")}`,
           },
           {
-            label: "Average Score",
+            label: t("student.dashboard.avg_score"),
             value: avgScore,
             icon: FileQuestion,
             color: avgScore >= 70 ? CLINICAL_GREEN : avgScore >= 40 ? AMBER : ALERT_RED,
-            desc: `${recentAttempts.filter(a => a.score / a.total >= 0.6).length}/${recentAttempts.length} passed`,
+            desc: `${recentAttempts.filter(a => a.score / a.total >= 0.6).length}/${recentAttempts.length} ${t("student.dashboard.passed")}`,
           },
           {
-            label: "Retention",
+            label: t("student.dashboard.retention"),
             value: retentionScore,
             icon: BookOpen,
             color: retentionScore >= 70 ? CLINICAL_GREEN : retentionScore >= 40 ? AMBER : ALERT_RED,
-            desc: `${recentAttempts.reduce((s, a) => s + a.total, 0)} questions answered`,
+            desc: `${recentAttempts.reduce((s, a) => s + a.total, 0)} ${t("student.dashboard.questions_answered")}`,
           },
         ].map((metric) => (
           <div key={metric.label}
@@ -113,11 +115,11 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-heading text-base font-bold text-card-foreground">
-            Your Courses
+            {t("student.dashboard.your_courses")}
           </h2>
           <Link href="/dashboard/courses"
             className="text-xs font-medium flex items-center gap-1 text-primary transition-colors hover:underline">
-            View all <ArrowRight className="h-3 w-3" />
+            {t("student.dashboard.view_all")} <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
 
@@ -125,7 +127,7 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
           {majors.length === 0 && (
             <div className="col-span-full rounded-xl border border-border bg-card p-6 text-center">
               <p className="text-sm text-muted-foreground">
-                No courses available yet.
+                {t("student.dashboard.no_courses")}
               </p>
             </div>
           )}
@@ -145,12 +147,12 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
                   {major.name}
                 </h3>
                 <p className="text-[11px] mt-0.5 text-muted-foreground/60">
-                  {moduleCount} module{moduleCount !== 1 ? "s" : ""} · {majorQuizzes} quiz{majorQuizzes !== 1 ? "zes" : ""}
+                  {moduleCount} {moduleCount === 1 ? t("modules.single") : t("modules.title").toLowerCase()} · {majorQuizzes} {t("nav.quizzes").toLowerCase()}
                 </p>
 
                 <div className="mt-3">
                   <div className="flex items-center justify-between text-[10px] mb-1">
-                    <span className="text-muted-foreground/70">Progress</span>
+                    <span className="text-muted-foreground/70">{t("student.dashboard.progress")}</span>
                     <span className="font-mono font-medium text-primary">
                       {completionPct}%
                     </span>
@@ -175,7 +177,7 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
                     ))}
                     {majorModules.length > 3 && (
                       <p className="text-[10px] mt-1 text-muted-foreground/50">
-                        +{majorModules.length - 3} more
+                        {t("student.dashboard.more").replace("{count}", String(majorModules.length - 3))}
                       </p>
                     )}
                   </div>
@@ -190,7 +192,7 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4">
             <h2 className="font-heading text-sm font-bold mb-3 text-card-foreground">
-              Recent Attempts
+              {t("student.dashboard.recent_attempts")}
             </h2>
             {recentAttempts.length > 0 ? (
               <div className="space-y-2">
@@ -201,7 +203,7 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
                       className="flex items-center justify-between py-1.5 border-b border-border/50 text-sm">
                       <div className="min-w-0 flex-1">
                         <p className="text-xs font-medium truncate text-card-foreground/80">
-                          {((attempt.quizzes as { title?: string })?.title) || "Quiz"}
+                          {((attempt.quizzes as { title?: string })?.title) || t("student.dashboard.quiz_fallback")}
                         </p>
                         <p className="text-[10px] mt-0.5 text-muted-foreground/60">
                           {new Date(attempt.completed_at).toLocaleDateString()}
@@ -219,18 +221,18 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
               </div>
             ) : (
               <p className="text-xs py-4 text-center text-muted-foreground">
-                No attempts yet.
+                {t("student.dashboard.no_attempts")}
               </p>
             )}
             <Link href="/dashboard/quizzes"
               className="text-xs font-medium flex items-center gap-1 mt-3 text-primary transition-colors hover:underline">
-              <PenLine className="h-3 w-3" /> Take a quiz
+              <PenLine className="h-3 w-3" /> {t("student.dashboard.take_quiz")}
             </Link>
           </div>
 
           <div className="rounded-xl border border-border bg-card p-4">
             <h2 className="font-heading text-sm font-bold mb-3 text-card-foreground">
-              Resource Hub
+              {t("student.dashboard.resource_hub")}
             </h2>
             {majors.length > 0 ? (
               <div className="space-y-2">
@@ -244,7 +246,7 @@ export default function StudentDashboard({ data }: { data: DashboardData }) {
               </div>
             ) : (
               <p className="text-xs py-4 text-center text-muted-foreground">
-                No resources yet.
+                {t("student.dashboard.no_resources")}
               </p>
             )}
         </div>
