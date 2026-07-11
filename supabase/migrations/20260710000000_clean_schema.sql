@@ -152,6 +152,7 @@ CREATE INDEX IF NOT EXISTS idx_quizzes_created_by            ON public.quizzes (
 CREATE INDEX IF NOT EXISTS idx_quiz_questions_question_id    ON public.quiz_questions (question_id);
 CREATE INDEX IF NOT EXISTS idx_quiz_attempts_quiz_id         ON public.quiz_attempts (quiz_id);
 CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user_id         ON public.quiz_attempts (user_id);
+CREATE INDEX IF NOT EXISTS idx_resources_created_by          ON public.resources (created_by);
 
 -- ============================================================
 -- 4. FUNCTIONS
@@ -209,7 +210,7 @@ RETURNS TRIGGER
 SET search_path = 'public'
 AS $$
 BEGIN
-  NEW.created_by = auth.uid();
+  NEW.created_by = (SELECT auth.uid());
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -241,14 +242,14 @@ CREATE TRIGGER set_resource_created_by
 
 -- 6a. PROFILES
 DROP POLICY IF EXISTS "Users can read own profile" ON public.profiles;
-CREATE POLICY "Users can read own profile"
-  ON public.profiles FOR SELECT
-  USING (auth.uid() = id);
-
 DROP POLICY IF EXISTS "Admin/teacher can read all profiles" ON public.profiles;
-CREATE POLICY "Admin/teacher can read all profiles"
+DROP POLICY IF EXISTS "Users can read own profile, admin/teacher can read all" ON public.profiles;
+CREATE POLICY "Users can read own profile, admin/teacher can read all"
   ON public.profiles FOR SELECT
-  USING (public.get_my_role() IN ('admin', 'teacher'));
+  USING (
+    (SELECT auth.uid()) = id
+    OR public.get_my_role() IN ('admin', 'teacher')
+  );
 
 DROP POLICY IF EXISTS "Admin/teacher can update any profile" ON public.profiles;
 CREATE POLICY "Admin/teacher can update any profile"
@@ -265,18 +266,18 @@ CREATE POLICY "Anyone can view majors"
 DROP POLICY IF EXISTS "Admin/teacher can insert majors" ON public.majors;
 CREATE POLICY "Admin/teacher can insert majors"
   ON public.majors FOR INSERT TO authenticated
-  WITH CHECK ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can update majors" ON public.majors;
 CREATE POLICY "Admin/teacher can update majors"
   ON public.majors FOR UPDATE TO authenticated
-  USING  ((SELECT public.get_my_role()) IN ('admin', 'teacher'))
-  WITH CHECK ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  USING  (public.get_my_role() IN ('admin', 'teacher'))
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can delete majors" ON public.majors;
 CREATE POLICY "Admin/teacher can delete majors"
   ON public.majors FOR DELETE TO authenticated
-  USING ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  USING (public.get_my_role() IN ('admin', 'teacher'));
 
 -- 6c. MODULES
 DROP POLICY IF EXISTS "Anyone can view modules" ON public.modules;
@@ -287,18 +288,18 @@ CREATE POLICY "Anyone can view modules"
 DROP POLICY IF EXISTS "Admin/teacher can insert modules" ON public.modules;
 CREATE POLICY "Admin/teacher can insert modules"
   ON public.modules FOR INSERT TO authenticated
-  WITH CHECK ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can update modules" ON public.modules;
 CREATE POLICY "Admin/teacher can update modules"
   ON public.modules FOR UPDATE TO authenticated
-  USING  ((SELECT public.get_my_role()) IN ('admin', 'teacher'))
-  WITH CHECK ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  USING  (public.get_my_role() IN ('admin', 'teacher'))
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can delete modules" ON public.modules;
 CREATE POLICY "Admin/teacher can delete modules"
   ON public.modules FOR DELETE TO authenticated
-  USING ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  USING (public.get_my_role() IN ('admin', 'teacher'));
 
 -- 6d. RESOURCES
 DROP POLICY IF EXISTS "View published or own resources" ON public.resources;
@@ -306,68 +307,68 @@ CREATE POLICY "View published or own resources"
   ON public.resources FOR SELECT TO anon, authenticated
   USING (
     published = true
-    OR COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher')
+    OR public.get_my_role() IN ('admin', 'teacher')
   );
 
 DROP POLICY IF EXISTS "Admin/teacher can insert resources" ON public.resources;
 CREATE POLICY "Admin/teacher can insert resources"
   ON public.resources FOR INSERT TO authenticated
-  WITH CHECK (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can update resources" ON public.resources;
 CREATE POLICY "Admin/teacher can update resources"
   ON public.resources FOR UPDATE TO authenticated
-  USING  (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'))
-  WITH CHECK (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING  (public.get_my_role() IN ('admin', 'teacher'))
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can delete resources" ON public.resources;
 CREATE POLICY "Admin/teacher can delete resources"
   ON public.resources FOR DELETE TO authenticated
-  USING (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING (public.get_my_role() IN ('admin', 'teacher'));
 
 -- 6e. QUESTIONS
 DROP POLICY IF EXISTS "Anyone can view published questions" ON public.questions;
 CREATE POLICY "Anyone can view published questions"
   ON public.questions FOR SELECT TO anon, authenticated
-  USING (published = true OR COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING (published = true OR public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can insert questions" ON public.questions;
 CREATE POLICY "Admin/teacher can insert questions"
   ON public.questions FOR INSERT TO authenticated
-  WITH CHECK (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can update questions" ON public.questions;
 CREATE POLICY "Admin/teacher can update questions"
   ON public.questions FOR UPDATE TO authenticated
-  USING  (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'))
-  WITH CHECK (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING  (public.get_my_role() IN ('admin', 'teacher'))
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can delete questions" ON public.questions;
 CREATE POLICY "Admin/teacher can delete questions"
   ON public.questions FOR DELETE TO authenticated
-  USING (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING (public.get_my_role() IN ('admin', 'teacher'));
 
 -- 6f. QUIZZES
 DROP POLICY IF EXISTS "Anyone can view published quizzes" ON public.quizzes;
 CREATE POLICY "Anyone can view published quizzes"
   ON public.quizzes FOR SELECT TO anon, authenticated
-  USING (published = true OR COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING (published = true OR public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can insert quizzes" ON public.quizzes;
 CREATE POLICY "Admin/teacher can insert quizzes"
   ON public.quizzes FOR INSERT TO authenticated
-  WITH CHECK (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can update quizzes" ON public.quizzes;
 CREATE POLICY "Admin/teacher can update quizzes"
   ON public.quizzes FOR UPDATE TO authenticated
-  USING  (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'))
-  WITH CHECK (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING  (public.get_my_role() IN ('admin', 'teacher'))
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can delete quizzes" ON public.quizzes;
 CREATE POLICY "Admin/teacher can delete quizzes"
   ON public.quizzes FOR DELETE TO authenticated
-  USING (COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING (public.get_my_role() IN ('admin', 'teacher'));
 
 -- 6g. QUIZ QUESTIONS
 DROP POLICY IF EXISTS "View quiz questions" ON public.quiz_questions;
@@ -377,25 +378,25 @@ CREATE POLICY "View quiz questions"
     EXISTS (
       SELECT 1 FROM public.quizzes q
       WHERE q.id = quiz_id
-        AND (q.published = true OR (SELECT public.get_my_role()) IN ('admin', 'teacher'))
+        AND (q.published = true OR public.get_my_role() IN ('admin', 'teacher'))
     )
   );
 
 DROP POLICY IF EXISTS "Admin/teacher can insert quiz questions" ON public.quiz_questions;
 CREATE POLICY "Admin/teacher can insert quiz questions"
   ON public.quiz_questions FOR INSERT TO authenticated
-  WITH CHECK ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can update quiz questions" ON public.quiz_questions;
 CREATE POLICY "Admin/teacher can update quiz questions"
   ON public.quiz_questions FOR UPDATE TO authenticated
-  USING  ((SELECT public.get_my_role()) IN ('admin', 'teacher'))
-  WITH CHECK ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  USING  (public.get_my_role() IN ('admin', 'teacher'))
+  WITH CHECK (public.get_my_role() IN ('admin', 'teacher'));
 
 DROP POLICY IF EXISTS "Admin/teacher can delete quiz questions" ON public.quiz_questions;
 CREATE POLICY "Admin/teacher can delete quiz questions"
   ON public.quiz_questions FOR DELETE TO authenticated
-  USING ((SELECT public.get_my_role()) IN ('admin', 'teacher'));
+  USING (public.get_my_role() IN ('admin', 'teacher'));
 
 -- 6h. QUIZ ATTEMPTS
 DROP POLICY IF EXISTS "View quiz attempts" ON public.quiz_attempts;
@@ -404,7 +405,7 @@ CREATE POLICY "View quiz attempts"
   USING (
     (SELECT auth.uid()) = user_id
     OR ((SELECT auth.uid()) IS NULL AND user_id IS NULL)
-    OR (SELECT public.get_my_role()) IN ('teacher', 'admin')
+    OR public.get_my_role() IN ('teacher', 'admin')
   );
 
 DROP POLICY IF EXISTS "Insert quiz attempts" ON public.quiz_attempts;
@@ -419,15 +420,30 @@ CREATE POLICY "Insert quiz attempts"
 DROP POLICY IF EXISTS "Admin/teacher can manage resources bucket" ON storage.objects;
 CREATE POLICY "Admin/teacher can manage resources bucket"
   ON storage.objects FOR ALL TO authenticated
-  USING  (bucket_id = 'resources' AND COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'))
-  WITH CHECK (bucket_id = 'resources' AND COALESCE((SELECT auth.jwt()) -> 'app_metadata' ->> 'role', 'unpaid-student') IN ('admin', 'teacher'));
+  USING  (bucket_id = 'resources' AND public.get_my_role() IN ('admin', 'teacher'))
+  WITH CHECK (bucket_id = 'resources' AND public.get_my_role() IN ('admin', 'teacher'));
 
 -- ============================================================
 -- 7. REVOKE EXECUTE ON INTERNAL FUNCTIONS
 --    (These are trigger/internal, not meant for REST API)
+--    REVOKE FROM PUBLIC removes the default PUBLIC grant,
+--    preventing anon/authenticated from calling via /rest/v1/rpc/
 -- ============================================================
-REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM anon, authenticated;
-REVOKE EXECUTE ON FUNCTION public.sync_role_to_jwt() FROM anon, authenticated;
-REVOKE EXECUTE ON FUNCTION public.set_created_by() FROM anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.sync_role_to_jwt() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.set_created_by() FROM PUBLIC;
+
+-- Safe revoke for Supabase built-in function (no-op if not present)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_proc
+    WHERE proname = 'rls_auto_enable'
+      AND pronamespace = 'public'::regnamespace
+  ) THEN
+    REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC;
+  END IF;
+END;
+$$;
 
 COMMIT;
